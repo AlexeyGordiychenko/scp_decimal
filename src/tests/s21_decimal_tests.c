@@ -1,8 +1,10 @@
 #include "s21_decimal_tests.h"
 
 int main(void) {
+
   int failed = 0;
-  Suite *decimal_tests[] = {NULL};
+  Suite *decimal_tests[] = {comparison_tests(),
+                              NULL};
 
   for (int i = 0; decimal_tests[i] != NULL; i++) {
     SRunner *sr = srunner_create(decimal_tests[i]);
