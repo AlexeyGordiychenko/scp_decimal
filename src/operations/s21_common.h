@@ -15,4 +15,20 @@
 #define TRUE 1
 #define FALSE 0
 
+int check_bit(unsigned int numb, int pos);
+void print_binary(unsigned int num);
+unsigned int set_bit(unsigned int numb, int pos);
+void print_full_binary(unsigned int num);
+void print_decimal_bits(s21_decimal obj);
+int get_decimal_sign(s21_decimal d);
+int get_decimal_exp(s21_decimal d);
+void set_decimal_exp(s21_decimal* d, int exp);
+int decimal_is_zero(s21_decimal d);
+int mantissa_is_equal(s21_decimal d1, s21_decimal d2);
+int mantissa_is_less(s21_decimal d1, s21_decimal d2);
+int increase_exp(s21_decimal* d);
+int decrease_exp(s21_decimal* d, int with_round);
+int divide_by_10(s21_decimal* d, int with_round);
+void decimal_normalization(s21_decimal* d1, s21_decimal* d2);
+int decimal_comparison(s21_decimal value_1, s21_decimal value_2, int mode);
 #endif
