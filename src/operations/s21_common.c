@@ -1,9 +1,7 @@
 #include "s21_common.h"
 
 int check_bit(unsigned int numb, int pos) {
-  // Сдвигает 1 на pos значений. Например pos = 2 => 100
   int a = 1 << pos;
-  // Возвращаем 1, если результат побитового перемножения больше 0
   return (numb & a) > 0 ? 1 : 0;
 }
 
@@ -36,12 +34,10 @@ void print_decimal_bits(s21_decimal obj) {
 }
 
 unsigned int set_bit(unsigned int numb, int pos) {
-  int bit = check_bit(numb, pos);  // Получаем значение заданного бита
+  int bit = check_bit(numb, pos);
   if (bit == 0) {
-    // Если бит равен 0, устанавливаем его в 1
     numb |= (1 << pos);
   } else {
-    // Если бит равен 1, устанавливаем его в 0
     numb &= ~(1 << pos);
   }
   return numb;
