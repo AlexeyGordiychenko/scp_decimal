@@ -15,7 +15,7 @@ int s21_floor(s21_decimal value, s21_decimal *result) {
         s21_truncate(value, &decimal_integer_part);
 
         if (s21_is_equal(value, decimal_integer_part)) {
-            *result = value;
+            *result = decimal_integer_part;
         } else if (s21_is_equal(value, zero_decimal)) {
             *result = zero_decimal;
         } else if (s21_is_less(decimal_integer_part, zero_decimal)) {
