@@ -80,25 +80,7 @@ int increase_exp(s21_decimal *d) {
   int exp = get_decimal_exp(*d);
   if (exp >= MAX_EXP) return res;
 
-  s21_decimal tmp_d = *d;
-  unsigned long long carry = 0;
-
-  for (int i = 0; i <= 2; i++) {
-    unsigned int x = tmp_d.bits[i];
-    unsigned long long x_by_8 = (unsigned long long)x << 3;
-    unsigned long long x_by_2 = (unsigned long long)x << 1;
-    unsigned long long sum = x_by_8 + x_by_2 + carry;
-
-    // Move the lower 32 bits to the current element.
-    tmp_d.bits[i] = (unsigned int)(sum & 0xFFFFFFFF);
-
-    // Calculate the carry for the next iteration.
-    carry = sum >> 32;
-  }
-
-  // Check if there's a carry left after processing all elements.
-  if (carry == 0) {
-    *d = tmp_d;
+  if (multiply_mantissa_by_10(d)) {
     set_decimal_exp(d, ++exp);
     res = exp;
   }
@@ -142,28 +124,14 @@ int divide_by_10(s21_decimal *d, int with_round) {
   return new_exp;
 }
 
-int decrease_exp(s21_decimal *d, int with_round) {
+int decrease_exp(s21_decimal *d, bool with_round) {
+  // divide bits[0-2] by 10, and decrease exp
+  // return the new exp
+
   int exp = get_decimal_exp(*d);
   if (exp == 0) return exp;
 
-  s21_decimal tmp_d = *d;
-
-  // Divide the 96-bit integer by 10.
-  unsigned long long remainder = 0;
-
-  for (int i = 2; i >= 0; --i) {
-    unsigned long long temp = (remainder << 32) | tmp_d.bits[i];
-    tmp_d.bits[i] = (unsigned int)(temp / 10);
-    remainder = temp % 10;
-  }
-
-  // Bank rounding (round half to even)
-  if (with_round &&
-      ((remainder > 5 || (remainder == 5 && tmp_d.bits[0] & 1)))) {
-    tmp_d.bits[0]++;
-  }
-
-  *d = tmp_d;
+  divide_mantissa_by_10(d, with_round);
   set_decimal_exp(d, --exp);
 
   return exp;
@@ -365,4 +333,51 @@ void add_mantis(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
        check_bit(value_2.bits[3], 31) == 1)) {  // (-v1) + (+v2) и (v1) + (-v2)
     sub_pos(value_1, value_2, result);
   }
+}
+
+void divide_mantissa_by_10(s21_decimal *d, bool with_round) {
+  // Divide the 96-bit integer by 10.
+
+  unsigned long long remainder = 0;
+
+  for (int i = 2; i >= 0; --i) {
+    unsigned long long temp = (remainder << 32) | d->bits[i];
+    d->bits[i] = (unsigned int)(temp / 10);
+    remainder = temp % 10;
+  }
+
+  // Bank rounding (round half to even)
+  if (with_round && ((remainder > 5 || (remainder == 5 && d->bits[0] & 1)))) {
+    d->bits[0]++;
+  }
+}
+
+bool multiply_mantissa_by_10(s21_decimal *d) {
+  // returns true and modifies the decimal if the multiplication is within
+  // bounds returns false and don't touch the decimal otherwise
+
+  bool res = false;
+  s21_decimal tmp_d = *d;
+  unsigned long long carry = 0;
+
+  for (int i = 0; i <= 2; i++) {
+    unsigned int x = tmp_d.bits[i];
+    unsigned long long x_by_8 = (unsigned long long)x << 3;
+    unsigned long long x_by_2 = (unsigned long long)x << 1;
+    unsigned long long sum = x_by_8 + x_by_2 + carry;
+
+    // Move the lower 32 bits to the current element.
+    tmp_d.bits[i] = (unsigned int)(sum & 0xFFFFFFFF);
+
+    // Calculate the carry for the next iteration.
+    carry = sum >> 32;
+  }
+
+  // Check if there's a carry left after processing all elements.
+  if (carry == 0) {
+    *d = tmp_d;
+    res = true;
+  }
+
+  return res;
 }
