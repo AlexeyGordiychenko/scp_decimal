@@ -1,5 +1,6 @@
-#include "s21_common.h"
 #include <math.h>
+
+#include "s21_common.h"
 
 int s21_from_int_to_decimal(int src, s21_decimal *dst) {
   int error_code = OK;

@@ -31,10 +31,11 @@ int decrease_exp(s21_decimal* d, int with_round);
 int divide_by_10(s21_decimal* d, int with_round);
 void decimal_normalization(s21_decimal* d1, s21_decimal* d2);
 int decimal_comparison(s21_decimal value_1, s21_decimal value_2, int mode);
-int sum_same_sign(s21_decimal value_1, s21_decimal value_2, s21_decimal *result);
-int sub_pos(s21_decimal value_1, s21_decimal value_2, s21_decimal *result);
+int sum_same_sign(s21_decimal value_1, s21_decimal value_2,
+                  s21_decimal* result);
+int sub_pos(s21_decimal value_1, s21_decimal value_2, s21_decimal* result);
 s21_decimal s21_decimal_fabs(s21_decimal value);
-void set_same_exp(s21_decimal value, s21_decimal *result);
-void sub_mantis(s21_decimal value1, s21_decimal value2, s21_decimal *result);
-void add_mantis(s21_decimal value1, s21_decimal value2, s21_decimal *result);
+void set_same_exp(s21_decimal value, s21_decimal* result);
+void sub_mantis(s21_decimal value1, s21_decimal value2, s21_decimal* result);
+void add_mantis(s21_decimal value1, s21_decimal value2, s21_decimal* result);
 #endif
