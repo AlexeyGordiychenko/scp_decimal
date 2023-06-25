@@ -241,3 +241,120 @@ int decimal_comparison(s21_decimal value_1, s21_decimal value_2, int mode) {
   }
   return res;
 }
+
+
+int sum_same_sign(s21_decimal value_1, s21_decimal value_2, s21_decimal *result){
+  int carry = 0;
+  for(int i = 0; i<3; i++){
+    for (int j = 0; j < 32; j++) {
+      int sum = check_bit(value_1.bits[i],j) + check_bit(value_2.bits[i],j)+ carry;
+      carry=0;
+      if(sum == 1) (*result).bits[i] = set_bit((*result).bits[i],j);
+      if(sum == 2) carry = 1;
+      if(sum == 3) {
+        carry = 1;
+        (*result).bits[i] = set_bit((*result).bits[i],j);
+      }
+    }
+  }
+  if (carry!=0) return HUGE_ERR;
+  else return OK;
+}
+
+int sub_pos(s21_decimal greater, s21_decimal lower, s21_decimal *result){
+  for(int i = 0; i<3; i++){
+    for (int j = 0; j < 32; j++) {
+      int sum = check_bit(greater.bits[i],j) - check_bit(lower.bits[i],j);
+      if(sum == -1){
+        (*result).bits[i] = set_bit((*result).bits[i],j);
+        int k=0;
+        int index = j<31?j+1:0;
+        if(index==0) k+=1;
+        // print_decimal_bits(greater);
+        // print_decimal_bits(lower);
+        while (check_bit(greater.bits[i+k],index)!=1){
+          greater.bits[i+k] = set_bit(greater.bits[i+k],index);
+          index+=1;
+          if(index==32){
+            k+=1;
+            index=0;
+          }
+        }
+        greater.bits[i+k] = set_bit(greater.bits[i+k],index);
+      }
+      if(sum == 1) (*result).bits[i] = set_bit((*result).bits[i],j);
+      
+    }
+  }
+return OK;
+}
+
+s21_decimal s21_decimal_fabs(s21_decimal value){
+  if(check_bit(value.bits[3],31)==1) value.bits[3] = set_bit(value.bits[3],31);
+  return value;
+}
+
+void set_same_exp(s21_decimal value, s21_decimal *result){
+  int temp = check_bit(result->bits[3],31);
+  for(int i=0; i<32; i++){
+    
+    result->bits[3] = value.bits[3] & 0b01111111111111111111111111111111;
+  }
+  if(temp == 1)
+    result->bits[3] = set_bit(result->bits[3],31);
+}
+
+void sub_mantis(s21_decimal value_1, s21_decimal value_2, s21_decimal *result){
+  result->bits[0]=0;
+  result->bits[1]=0;
+  result->bits[2]=0;
+  result->bits[3]=0;
+  s21_decimal first_val = s21_decimal_fabs(value_1);
+  s21_decimal second_val = s21_decimal_fabs(value_2);
+  
+  if((check_bit(value_1.bits[3],31)==0 && check_bit(value_2.bits[3],31)==0)){
+    if(s21_is_greater_or_equal(first_val,second_val)){ // |v1|>|v2| (+v1) - (+v2)
+      sub_pos(first_val,second_val,result);
+    }
+    else{                                              // |v2|>|v1| (+v1) - (+v2)
+      sub_pos(second_val,first_val,result);
+      result->bits[3] = set_bit(result->bits[3],31);
+    }
+  }
+
+  if((check_bit(value_1.bits[3],31)==1 && check_bit(value_2.bits[3],31)==1)){
+    if(s21_is_greater_or_equal(first_val,second_val)){ // |v1|>|v2| (-v1) - (-v2)
+      sub_pos(first_val,second_val,result);
+      result->bits[3] = set_bit(result->bits[3],31);
+    }
+    else{                                              // |v2|>|v1| (-v1) - (-v2)
+      sub_pos(second_val,first_val,result);
+    }
+  }
+  
+  if((check_bit(value_1.bits[3],31)==0 && check_bit(value_2.bits[3],31)==1)){ // (+v1) - (-v2)
+    s21_add(first_val,second_val,result);
+  }
+  
+  if((check_bit(value_1.bits[3],31)==1 && check_bit(value_2.bits[3],31)==0)){ // (-v1) - (+v2)
+    s21_add(first_val,second_val,result);
+    result->bits[3] = set_bit(result->bits[3],31);
+  }
+}
+
+void add_mantis(s21_decimal value_1, s21_decimal value_2, s21_decimal *result){
+  result->bits[0]=0;
+  result->bits[1]=0;
+  result->bits[2]=0;
+  result->bits[3]=0;
+  if((check_bit(value_1.bits[3],31)==0 && check_bit(value_2.bits[3],31)==0)){ // (+v1) + (+v2)
+    sum_same_sign(value_1,value_2,result);
+  }
+  if((check_bit(value_1.bits[3],31)==1 && check_bit(value_2.bits[3],31)==1)){ // (-v1) + (-v2)
+    sum_same_sign(value_1,value_2,result);
+    result->bits[3] = set_bit(result->bits[3],31);
+  }
+  if((check_bit(value_1.bits[3],31)==0 && check_bit(value_2.bits[3],31)==1)){ // (-v1) + (+v2) и (v1) + (-v2)
+    sub_pos(value_1,value_2,result);
+  }
+}

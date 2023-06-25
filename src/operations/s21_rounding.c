@@ -3,10 +3,10 @@
 int s21_floor(s21_decimal value, s21_decimal *result) { 
     // MIN_DECIMAL_VALUE -79,228,162,514,264,337,593,543,950,335
     // MAX_DECIMAL_VALUE 79,228,162,514,264,337,593,543,950,335
-    s21_decimal s21_min_decimal_value = {-1, -1, -1, 1 << 31};
-    s21_decimal s21_max_decimal_value = {-1, -1, -1, 0};
-    s21_decimal zero_decimal = {0, 0, 0, 0};
-    s21_decimal one_decimal = {1, 0, 0, 0};
+    s21_decimal s21_min_decimal_value = {{-1, -1, -1, 1 << 31}};
+    s21_decimal s21_max_decimal_value = {{-1, -1, -1, 0}};
+    s21_decimal zero_decimal = {{0, 0, 0, 0}};
+    s21_decimal one_decimal = {{1, 0, 0, 0}};
     int error_flag = 1;
 
     if (s21_is_less_or_equal(value, s21_max_decimal_value) && s21_is_greater_or_equal(value, s21_min_decimal_value)) {
