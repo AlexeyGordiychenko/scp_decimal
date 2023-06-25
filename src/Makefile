@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -Wextra -Werror -std=c11 -Wno-unused-parameter -g #-fmax-errors=1
+CFLAGS=-Wall -Wextra -Werror -std=c11 -Wno-unused-parameter -g -ferror-limit=1
 LDFLAGS=-lcheck -pthread -lm
 ifeq ($(shell uname), Linux)
 	LDFLAGS += -lsubunit
