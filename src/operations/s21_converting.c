@@ -3,7 +3,6 @@
 
 int s21_from_int_to_decimal(int src, s21_decimal *dst) {
   int error_code = OK;
-
   if (dst != NULL && !isnan(src)) {
     int is_int_min = 0;
     int sign = 0;
