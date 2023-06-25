@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS=-Wall -Wextra -Werror -std=c11 -fmax-errors=1 -Wno-unused-parameter -g
-LDFLAGS=-lcheck -pthread -lgcov -lm
+CFLAGS=-Wall -Wextra -Werror -std=c11 -Wno-unused-parameter -g #-fmax-errors=1
+LDFLAGS=-lcheck -pthread -lm
 ifeq ($(shell uname), Linux)
 	LDFLAGS += -lsubunit
 endif
@@ -28,7 +28,7 @@ TEST=test
 all: $(LIB)
 
 $(TEST): $(OBJS_GCOV) $(OBJS_TEST)
-	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
+	$(CC) $(CFLAGS) $^ $(LDFLAGS) $(GCOVFLAGS) -o $@
 	./$@
 
 $(LIB): $(OBJS)
@@ -47,12 +47,13 @@ $(OBJ_DIR_GCOV)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS) $(GCOVFLAGS) -c $< -o $@
 
 # gcov report with gcovr
-# gcov_report:
-# 	mkdir -p $(GCOV_DIR)
-# 	gcovr --html-details -o $(GCOV_DIR)/index.html --filter "$(SRC_DIR)/*"
+gcov_report:
+	mkdir -p $(GCOV_DIR)
+	gcovr --html-details -o $(GCOV_DIR)/index.html --filter "$(SRC_DIR)/*"
+	open $(GCOV_DIR)/index.html
 
 # gcov report with lcov
-gcov_report:
+lcov_report:
 	mkdir -p $(GCOV_DIR)
 	lcov -o $(GCOV_DIR)/Coverage_Report.info -c -d $(OBJ_DIR_GCOV)
 	genhtml -o $(GCOV_DIR) $(GCOV_DIR)/Coverage_Report.info
