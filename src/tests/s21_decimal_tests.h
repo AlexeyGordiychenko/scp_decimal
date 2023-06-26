@@ -6,6 +6,7 @@
 #include "../s21_decimal.h"
 
 Suite *comparison_tests(void);
+Suite *converting_tests(void);
 Suite *truncate_tests(void);
 Suite *add_tests(void);
 Suite *sub_tests(void);

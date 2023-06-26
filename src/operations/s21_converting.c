@@ -35,8 +35,8 @@ int s21_from_int_to_decimal(int src, s21_decimal *dst) {
 
 int s21_from_float_to_decimal(float src, s21_decimal *dst) {
   int error_code = OK;
-
-  if (!isnan(src) && !isinf(src) && dst != NULL && src < pow(2, 64)) {
+  
+  if (!isnan(src) && !isinf(src) && dst != NULL && src < pow(2, 64) && src != 0) {
     dst->bits[3] = dst->bits[2] = dst->bits[1] = dst->bits[0] = 0;
 
     int sign = 0;
@@ -53,7 +53,7 @@ int s21_from_float_to_decimal(float src, s21_decimal *dst) {
 
     unsigned long long num = src;
     unsigned long long next = src;
-    for (int i = 0; next < pow(2, 64); ++i) {
+    for (int i = 0; next < pow(2, 64) && i < 40; ++i) {
       num = next;
       next = src * pow(10, i);
     }
@@ -72,6 +72,8 @@ int s21_from_float_to_decimal(float src, s21_decimal *dst) {
         dst->bits[i / 32] = set_bit(dst->bits[i / 32], i % 32);
       num = num >> 1;
     }
+  } else if (src == 0) {
+    dst->bits[3] = dst->bits[2] = dst->bits[1] = dst->bits[0] = 0;
   } else {
     error_code = ERROR;
   }
@@ -96,7 +98,7 @@ int s21_from_decimal_to_int(s21_decimal src, int *dst) {
       num /= 10;
     }
 
-    if (num > __INT_MAX__) {
+    if (num > (unsigned)__INT_MAX__ + get_decimal_sign(src)) {
       error_code = ERROR;
     } else {
       *dst = num;
