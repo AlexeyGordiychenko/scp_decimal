@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -Wextra -Werror -std=c11 -Wno-unused-parameter -g -ferror-limit=1
+CFLAGS=-Wall -Wextra -Werror -std=c11 -Wno-unused-parameter -g -ferror-limit=1 -O0
 LDFLAGS=-lcheck -pthread -lm
 ifeq ($(shell uname), Linux)
 	LDFLAGS += -lsubunit
@@ -70,5 +70,5 @@ clang_n:
 clang_i:
 	clang-format -i --style=Google *.[ch] $(SRC_DIR)/*.[ch] $(TEST_DIR)/*.[ch]
 
-valgrind:
+valgrind: $(TEST)
 	valgrind --tool=memcheck --leak-check=yes ./$(TEST)

@@ -1,4 +1,3 @@
-#include "../operations/s21_common.h"
 #include "s21_decimal_tests.h"
 
 START_TEST(s21_int_to_dec_1) {
@@ -19,6 +18,7 @@ START_TEST(s21_int_to_dec_3) {
   int src = -__INT_MAX__ - 1;
   s21_decimal dst;
   ck_assert_int_eq(s21_from_int_to_decimal(src, &dst), 0);
+
 }
 END_TEST
 
@@ -100,7 +100,7 @@ START_TEST(s21_dec_to_int_6) {
 END_TEST
 
 START_TEST(s21_dec_to_float_1) {
-  float fsrc = 0.12345678;
+  float fsrc = 0.3333333333333333333333333333333;
   s21_decimal src;
   s21_from_float_to_decimal(fsrc, &src);
   float dst;
@@ -110,7 +110,7 @@ START_TEST(s21_dec_to_float_1) {
 END_TEST
 
 START_TEST(s21_dec_to_float_2) {
-  float fsrc = 99999.99999;
+  float fsrc = -99999.99999;
   s21_decimal src;
   s21_from_float_to_decimal(fsrc, &src);
   float dst;
@@ -120,7 +120,8 @@ START_TEST(s21_dec_to_float_2) {
 END_TEST
 
 START_TEST(s21_dec_to_float_3) {
-  float fsrc = 0.000000002;
+  // float fsrc = -0.000000002;
+  float fsrc = 2000000000000000000;
   s21_decimal src;
   s21_from_float_to_decimal(fsrc, &src);
   float dst;
@@ -140,6 +141,16 @@ START_TEST(s21_dec_to_float_5) {
   float dst;
   s21_from_decimal_to_float(src, &dst);
   ck_assert_int_eq(dst, pow(2, 96));
+}
+END_TEST
+
+START_TEST(s21_dec_to_float_6) {
+  float fsrc = -0.000000002;
+  s21_decimal src;
+  s21_from_float_to_decimal(fsrc, &src);
+  float dst;
+  s21_from_decimal_to_float(src, &dst);
+  ck_assert_int_eq(dst, fsrc);
 }
 END_TEST
 
@@ -170,6 +181,7 @@ Suite *converting_tests(void) {
   tcase_add_test(tc, s21_dec_to_float_3);
   tcase_add_test(tc, s21_dec_to_float_4);
   tcase_add_test(tc, s21_dec_to_float_5);
+  tcase_add_test(tc, s21_dec_to_float_6);
 
   suite_add_tcase(s, tc);
   return s;
