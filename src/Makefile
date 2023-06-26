@@ -3,6 +3,7 @@ CFLAGS=-Wall -Wextra -Werror -std=c11 -Wno-unused-parameter -g -ferror-limit=1
 LDFLAGS=-lcheck -pthread -lm
 ifeq ($(shell uname), Linux)
 	LDFLAGS += -lsubunit
+else ifeq ($(shell uname), Darwin)
 endif
 
 GCOVFLAGS=--coverage
@@ -46,17 +47,17 @@ $(OBJ_DIR_GCOV)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(OBJ_DIR_GCOV)
 	$(CC) $(CFLAGS) $(GCOVFLAGS) -c $< -o $@
 
-# gcov report with gcovr
-gcov_report:
+gcov_report: $(TEST)
 	mkdir -p $(GCOV_DIR)
 	gcovr --html-details -o $(GCOV_DIR)/index.html --filter "$(SRC_DIR)/*"
 	open $(GCOV_DIR)/index.html
 
-# gcov report with lcov
-lcov_report:
+lcov_report: $(TEST)
 	mkdir -p $(GCOV_DIR)
 	lcov -o $(GCOV_DIR)/Coverage_Report.info -c -d $(OBJ_DIR_GCOV)
-	genhtml -o $(GCOV_DIR) $(GCOV_DIR)/Coverage_Report.info
+	lcov -r $(GCOV_DIR)/Coverage_Report.info  -o $(GCOV_DIR)/Coverage_Report.info '/Library/*'
+	genhtml -o $(GCOV_DIR) $(GCOV_DIR)/Coverage_Report.info 
+	open $(GCOV_DIR)/index.html
 
 clean:
 	rm -rf $(OBJ_DIR) $(GCOV_DIR) $(TEST) $(LIB)

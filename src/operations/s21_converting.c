@@ -35,8 +35,9 @@ int s21_from_int_to_decimal(int src, s21_decimal *dst) {
 
 int s21_from_float_to_decimal(float src, s21_decimal *dst) {
   int error_code = OK;
-  
-  if (!isnan(src) && !isinf(src) && dst != NULL && src < pow(2, 64) && src != 0) {
+
+  if (!isnan(src) && !isinf(src) && dst != NULL && src < pow(2, 64) &&
+      src != 0) {
     dst->bits[3] = dst->bits[2] = dst->bits[1] = dst->bits[0] = 0;
 
     int sign = 0;
