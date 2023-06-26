@@ -47,6 +47,10 @@ int get_decimal_sign(s21_decimal d) { return (d.bits[3] >> 31) & 0x1; }
 
 int get_decimal_exp(s21_decimal d) { return (d.bits[3] >> 16) & 0xFF; }
 
+void set_decimal_sign(s21_decimal *d, int sign) {
+  d->bits[3] = (d->bits[3] & 0x7FFFFFFF) | (sign << 31);
+}
+
 void set_decimal_exp(s21_decimal *d, int exp) {
   d->bits[3] = (d->bits[3] & 0xFF00FFFF) | (exp << 16);
 }
