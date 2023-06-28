@@ -44,4 +44,9 @@ void sub_mantis(s21_decimal value1, s21_decimal value2, s21_decimal* result);
 int add_mantis(s21_decimal value1, s21_decimal value2, s21_decimal* result);
 void divide_mantissa_by_10(s21_decimal* d, bool with_round);
 bool multiply_mantissa_by_10(s21_decimal* d);
+bool subtract_bits(s21_decimal* minuend, s21_decimal subtrahend);
+bool add_bits(s21_decimal* accumulator, s21_decimal addend);
+bool left_shift_bits(s21_decimal* d);
+void right_shift_bits(s21_decimal* d);
+void set_bit96(s21_decimal* d, int bit_position);
 #endif

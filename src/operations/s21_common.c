@@ -402,3 +402,80 @@ bool multiply_mantissa_by_10(s21_decimal *d) {
 
   return res;
 }
+
+bool subtract_bits(s21_decimal *minuend, s21_decimal subtrahend) {
+  unsigned long long borrow = 0;
+  bool res = true;
+  s21_decimal tmp = *minuend;
+
+  for (int i = 0; i < 3; i++) {
+    unsigned long long temp =
+        (unsigned long long)tmp.bits[i] - subtrahend.bits[i] - borrow;
+    tmp.bits[i] = (unsigned int)temp;
+    borrow = (temp >> 32) & 1;
+  }
+
+  if (borrow) {
+    res = false;
+  } else {
+    *minuend = tmp;
+  }
+
+  return res;
+}
+
+bool add_bits(s21_decimal *accumulator, s21_decimal addend) {
+  unsigned long long sum;
+  unsigned long long carry = 0;
+  bool res = true;
+  s21_decimal tmp = *accumulator;
+
+  for (int i = 0; i < 3; i++) {
+    sum = carry + tmp.bits[i] + addend.bits[i];
+    tmp.bits[i] = (unsigned int)(sum & 0xFFFFFFFF);
+    carry = (sum >> 32);
+  }
+
+  if (carry) {
+    res = false;
+  } else {
+    *accumulator = tmp;
+  }
+  return res;
+}
+
+bool left_shift_bits(s21_decimal *d) {
+  bool res = true;
+  unsigned long long carry = 0;
+  s21_decimal tmp = *d;
+
+  for (int i = 0; i < 3; i++) {
+    unsigned long long new_carry = tmp.bits[i] >> 31;
+    tmp.bits[i] <<= 1;
+    tmp.bits[i] |= (unsigned int)carry;
+    carry = new_carry;
+  }
+
+  if (carry) {
+    res = false;
+  } else {
+    *d = tmp;
+  }
+  return res;
+}
+
+void right_shift_bits(s21_decimal *d) {
+  unsigned long long carry = 0;
+  for (int i = 2; i >= 0; i--) {
+    unsigned long long new_carry = d->bits[i] & 1;
+    d->bits[i] >>= 1;
+    d->bits[i] |= (unsigned int)(carry << 31);
+    carry = new_carry;
+  }
+}
+
+void set_bit96(s21_decimal *d, int bit_position) {
+  int index = bit_position / 32;
+  int bit_offset = bit_position % 32;
+  d->bits[index] |= (1 << bit_offset);
+}
