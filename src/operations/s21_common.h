@@ -40,7 +40,7 @@ int sub_pos(s21_decimal value_1, s21_decimal value_2, s21_decimal* result);
 s21_decimal s21_decimal_fabs(s21_decimal value);
 void set_same_exp(s21_decimal value, s21_decimal* result);
 void sub_mantis(s21_decimal value1, s21_decimal value2, s21_decimal* result);
-void add_mantis(s21_decimal value1, s21_decimal value2, s21_decimal* result);
+int add_mantis(s21_decimal value1, s21_decimal value2, s21_decimal* result);
 void divide_mantissa_by_10(s21_decimal* d, bool with_round);
 bool multiply_mantissa_by_10(s21_decimal* d);
 #endif
