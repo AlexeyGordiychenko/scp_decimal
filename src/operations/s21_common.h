@@ -17,6 +17,9 @@
 #define TRUE 1
 #define FALSE 0
 
+static const s21_decimal S21_D_ONE = {{1, 0, 0, 0}};
+static const s21_decimal S21_D_ZERO = {{0, 0, 0, 0}};
+
 int check_bit(unsigned int numb, int pos);
 void print_binary(unsigned int num);
 unsigned int set_bit(unsigned int numb, int pos);
@@ -49,4 +52,6 @@ bool add_bits(s21_decimal* accumulator, s21_decimal addend);
 bool left_shift_bits(s21_decimal* d);
 void right_shift_bits(s21_decimal* d);
 void set_bit96(s21_decimal* d, int bit_position);
+void div_mantissas(s21_decimal value_1, s21_decimal value_2,
+                   s21_decimal* quotient, s21_decimal* remainder);
 #endif

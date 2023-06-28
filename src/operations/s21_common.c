@@ -479,3 +479,31 @@ void set_bit96(s21_decimal *d, int bit_position) {
   int bit_offset = bit_position % 32;
   d->bits[index] |= (1 << bit_offset);
 }
+
+void div_mantissas(s21_decimal value_1, s21_decimal value_2,
+                   s21_decimal *quotient, s21_decimal *remainder) {
+  s21_decimal temp_divisor = value_2;
+  s21_decimal temp_remainder = value_1;
+  temp_divisor.bits[3] = 0;
+  temp_remainder.bits[3] = 0;
+
+  *quotient = S21_D_ZERO;
+
+  int shift_count = 0;
+  while (s21_is_less_or_equal(temp_divisor, temp_remainder) && ++shift_count &&
+         left_shift_bits(&temp_divisor)) {
+  }
+
+  if (s21_is_greater(temp_divisor, temp_remainder)) {
+    right_shift_bits(&temp_divisor);
+  }
+  for (int i = 0; i < shift_count; i++) {
+    if (s21_is_greater_or_equal(temp_remainder, temp_divisor)) {
+      subtract_bits(&temp_remainder, temp_divisor);
+      set_bit96(quotient, shift_count - 1 - i);
+    }
+    right_shift_bits(&temp_divisor);
+  }
+
+  *remainder = temp_remainder;
+}
