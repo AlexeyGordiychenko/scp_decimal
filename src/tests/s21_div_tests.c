@@ -110,25 +110,25 @@ START_TEST(s21_div_9) {
 END_TEST
 
 START_TEST(s21_div_10) {
-  // 101 / 0 = DIV_ZERO_ERR
+  // 101 / 0 = S21_DIV_ZERO_ERR
   s21_decimal d1 = {{0x65, 0x0, 0x0, sign_and_exp_bits(0, 0)}};
   s21_decimal d2 = {{0x0, 0x0, 0x0, sign_and_exp_bits(0, 0)}};
   s21_decimal correct = S21_D_ZERO;
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), DIV_ZERO_ERR);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_DIV_ZERO_ERR);
   ASSERT_BITS_EQ
 }
 END_TEST
 
 START_TEST(s21_div_11) {
-  //-579 / 0 = DIV_ZERO_ERR
+  //-579 / 0 = S21_DIV_ZERO_ERR
   s21_decimal d1 = {{0x243, 0x0, 0x0, sign_and_exp_bits(1, 0)}};
   s21_decimal d2 = {{0x0, 0x0, 0x0, sign_and_exp_bits(0, 0)}};
   s21_decimal correct = S21_D_ZERO;
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), DIV_ZERO_ERR);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_DIV_ZERO_ERR);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -225,14 +225,14 @@ START_TEST(s21_div_18) {
 END_TEST
 
 START_TEST(s21_div_19) {
-  // 7922816251426433759354395033.5 / 0.01 = HUGE_ERR
+  // 7922816251426433759354395033.5 / 0.01 = S21_HUGE_ERR
   s21_decimal d1 = {
       {0xffffffff, 0xffffffff, 0xffffffff, sign_and_exp_bits(0, 1)}};
   s21_decimal d2 = {{0x1, 0x0, 0x0, sign_and_exp_bits(0, 2)}};
   s21_decimal correct = S21_D_ZERO;
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), HUGE_ERR);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_HUGE_ERR);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -252,14 +252,14 @@ START_TEST(s21_div_20) {
 END_TEST
 
 START_TEST(s21_div_21) {
-  // 79228162514264337593543950335 / 0.4 = HUGE_ERR
+  // 79228162514264337593543950335 / 0.4 = S21_HUGE_ERR
   s21_decimal d1 = {
       {0xffffffff, 0xffffffff, 0xffffffff, sign_and_exp_bits(0, 0)}};
   s21_decimal d2 = {{0x4, 0x0, 0x0, sign_and_exp_bits(0, 1)}};
   s21_decimal correct = S21_D_ZERO;
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), HUGE_ERR);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_HUGE_ERR);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -366,25 +366,25 @@ START_TEST(s21_div_29) {
 END_TEST
 
 START_TEST(s21_div_30) {
-  //-184838746726726348023 / 0.00000000193289 = SMALL_ERR
+  //-184838746726726348023 / 0.00000000193289 = S21_SMALL_ERR
   s21_decimal d1 = {{0x8eebacf7, 0x52724d4, 0xa, sign_and_exp_bits(1, 0)}};
   s21_decimal d2 = {{0x2f309, 0x0, 0x0, sign_and_exp_bits(0, 14)}};
   s21_decimal correct = S21_D_ZERO;
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), SMALL_ERR);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_SMALL_ERR);
   ASSERT_BITS_EQ
 }
 END_TEST
 
 START_TEST(s21_div_31) {
-  // 45284674874386437639 / 0.00000000048934 = HUGE_ERR
+  // 45284674874386437639 / 0.00000000048934 = S21_HUGE_ERR
   s21_decimal d1 = {{0xa8dc5607, 0x74737bde, 0x2, sign_and_exp_bits(0, 0)}};
   s21_decimal d2 = {{0xbf26, 0x0, 0x0, sign_and_exp_bits(0, 14)}};
   s21_decimal correct = S21_D_ZERO;
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), HUGE_ERR);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_HUGE_ERR);
   ASSERT_BITS_EQ
 }
 END_TEST

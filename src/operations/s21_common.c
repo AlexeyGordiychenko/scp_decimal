@@ -13,7 +13,7 @@ void print_binary(unsigned int num) {
 }
 
 void print_full_binary(unsigned int num) {
-  for (unsigned int i = 1 << 31; i > 0; i = i >> 1) {
+  for (unsigned int i = 1 << S21_SIGN_SHIFT; i > 0; i = i >> 1) {
     if ((num & i) != 0)
       printf("1");
     else
@@ -43,16 +43,20 @@ unsigned int set_bit(unsigned int numb, int pos) {
   return numb;
 }
 
-int get_decimal_sign(s21_decimal d) { return (d.bits[3] >> 31) & 0x1; }
+int get_decimal_sign(s21_decimal d) {
+  return (d.bits[3] >> S21_SIGN_SHIFT) & 0x1;
+}
 
-int get_decimal_exp(s21_decimal d) { return (d.bits[3] >> 16) & 0xFF; }
+int get_decimal_exp(s21_decimal d) {
+  return (d.bits[3] >> S21_EXP_SHIFT) & 0xFF;
+}
 
 void set_decimal_sign(s21_decimal *d, int sign) {
-  d->bits[3] = (d->bits[3] & 0x7FFFFFFF) | (sign << 31);
+  d->bits[3] = (d->bits[3] & 0x7FFFFFFF) | (sign << S21_SIGN_SHIFT);
 }
 
 void set_decimal_exp(s21_decimal *d, int exp) {
-  d->bits[3] = (d->bits[3] & 0xFF00FFFF) | (exp << 16);
+  d->bits[3] = (d->bits[3] & 0xFF00FFFF) | (exp << S21_EXP_SHIFT);
 }
 
 int decimal_is_zero(s21_decimal d) {
@@ -82,7 +86,7 @@ int increase_exp(s21_decimal *d) {
   int res = -1;
 
   int exp = get_decimal_exp(*d);
-  if (exp >= MAX_EXP) return res;
+  if (exp >= S21_MAX_EXP) return res;
 
   if (multiply_mantissa_by_10(d)) {
     set_decimal_exp(d, ++exp);
@@ -108,11 +112,11 @@ int divide_by_10(s21_decimal *d, int with_round) {
     remainder = temp % 10;
   }
 
-  if (remainder != 0 && exp < MAX_EXP) {
+  if (remainder != 0 && exp < S21_MAX_EXP) {
     // can't change mantissa but can increase exp
     new_exp++;
   } else {
-    if (exp > MAX_EXP) new_exp--;
+    if (exp > S21_MAX_EXP) new_exp--;
     // Bank rounding (round half to even)
     if (with_round &&
         ((remainder > 5 || (remainder == 5 && tmp_d.bits[0] & 1)))) {
@@ -150,7 +154,7 @@ void decimal_normalization(s21_decimal *d1, s21_decimal *d2) {
   int tmp_exp;
 
   int max_exp = (exp1 > exp2) ? exp1 : exp2;
-  if (max_exp > MAX_EXP) max_exp = MAX_EXP;
+  if (max_exp > S21_MAX_EXP) max_exp = S21_MAX_EXP;
 
   // increase to the max
   if (max_exp > exp1) {
@@ -174,7 +178,7 @@ void decimal_normalization(s21_decimal *d1, s21_decimal *d2) {
 }
 
 int decimal_comparison(s21_decimal value_1, s21_decimal value_2, int mode) {
-  int res = FALSE;
+  int res = false;
 
   int value1_zero = decimal_is_zero(value_1);
   int value2_zero = decimal_is_zero(value_2);
@@ -182,32 +186,32 @@ int decimal_comparison(s21_decimal value_1, s21_decimal value_2, int mode) {
   int value2_sign = get_decimal_sign(value_2);
 
   if (value1_zero && value2_zero) {
-    res = (mode != LESS);
+    res = (mode != S21_LESS);
   } else if (value1_zero || value2_zero) {
-    res = mode != EQUAL &&
+    res = mode != S21_EQUAL &&
           ((value1_zero && !value2_sign) || (value2_zero && value1_sign));
   } else if (value1_sign != value2_sign) {
-    res = mode != EQUAL && value1_sign;
+    res = mode != S21_EQUAL && value1_sign;
   } else {
     if (get_decimal_exp(value_1) != get_decimal_exp(value_2)) {
       decimal_normalization(&value_1, &value_2);
     }
 
-    int eq = FALSE;
-    int less = FALSE;
-    if (mode == EQUAL || mode == LESS_OR_EQUAL) {
+    int eq = false;
+    int less = false;
+    if (mode == S21_EQUAL || mode == S21_LESS_OR_EQUAL) {
       eq = mantissa_is_equal(value_1, value_2);
     }
-    if (mode == LESS || mode == LESS_OR_EQUAL) {
+    if (mode == S21_LESS || mode == S21_LESS_OR_EQUAL) {
       less = (value1_sign) ? mantissa_is_less(value_2, value_1)
                            : mantissa_is_less(value_1, value_2);
     }
 
-    if (mode == EQUAL) {
+    if (mode == S21_EQUAL) {
       res = eq;
-    } else if (mode == LESS) {
+    } else if (mode == S21_LESS) {
       res = less;
-    } else if (mode == LESS_OR_EQUAL) {
+    } else if (mode == S21_LESS_OR_EQUAL) {
       res = eq || less;
     }
   }
@@ -232,7 +236,7 @@ int sum_same_sign(s21_decimal value_1, s21_decimal value_2,
     }
   }
   if (carry != 0 && get_decimal_exp(value_1) == 0)
-    return HUGE_ERR;
+    return S21_HUGE_ERR;
   else if (carry != 0) {
     decrease_exp(&value_1, 1);
     result->bits[0] = 0;
@@ -241,7 +245,7 @@ int sum_same_sign(s21_decimal value_1, s21_decimal value_2,
     result->bits[3] = 0;
     sum_same_sign(value_1, value_2, result);
   }
-  return OK;
+  return S21_OK;
 }
 
 int sub_pos(s21_decimal greater, s21_decimal lower, s21_decimal *result) {
@@ -266,7 +270,7 @@ int sub_pos(s21_decimal greater, s21_decimal lower, s21_decimal *result) {
       if (sum == 1) (*result).bits[i] = set_bit((*result).bits[i], j);
     }
   }
-  return OK;
+  return S21_OK;
 }
 
 s21_decimal s21_decimal_fabs(s21_decimal value) {
@@ -330,7 +334,7 @@ int add_mantis(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   result->bits[1] = 0;
   result->bits[2] = 0;
   result->bits[3] = 0;
-  int flag = OK;
+  int flag = S21_OK;
   if ((check_bit(value_1.bits[3], 31) == 0 &&
        check_bit(value_2.bits[3], 31) == 0)) {  // (+v1) + (+v2)
     flag = sum_same_sign(value_1, value_2, result);
@@ -441,7 +445,7 @@ bool left_shift_bits(s21_decimal *d) {
   s21_decimal tmp = *d;
 
   for (int i = 0; i < 3; i++) {
-    unsigned long long new_carry = tmp.bits[i] >> 31;
+    unsigned long long new_carry = tmp.bits[i] >> S21_SIGN_SHIFT;
     tmp.bits[i] <<= 1;
     tmp.bits[i] |= (unsigned int)carry;
     carry = new_carry;
@@ -460,7 +464,7 @@ void right_shift_bits(s21_decimal *d) {
   for (int i = 2; i >= 0; i--) {
     unsigned long long new_carry = d->bits[i] & 1;
     d->bits[i] >>= 1;
-    d->bits[i] |= (unsigned int)(carry << 31);
+    d->bits[i] |= (unsigned int)(carry << S21_SIGN_SHIFT);
     carry = new_carry;
   }
 }

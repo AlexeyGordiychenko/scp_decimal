@@ -3,7 +3,7 @@
 int s21_floor(s21_decimal value, s21_decimal *result) {
   // MIN_DECIMAL_VALUE -79,228,162,514,264,337,593,543,950,335
   // MAX_DECIMAL_VALUE 79,228,162,514,264,337,593,543,950,335
-  s21_decimal s21_min_decimal_value = {{-1, -1, -1, 1 << 31}};
+  s21_decimal s21_min_decimal_value = {{-1, -1, -1, 1 << S21_SIGN_SHIFT}};
   s21_decimal s21_max_decimal_value = {{-1, -1, -1, 0}};
   s21_decimal zero_decimal = {{0, 0, 0, 0}};
   s21_decimal one_decimal = {{1, 0, 0, 0}};
@@ -29,12 +29,13 @@ int s21_floor(s21_decimal value, s21_decimal *result) {
 }
 
 int s21_round(s21_decimal value, s21_decimal *result) {
-  s21_decimal s21_min_decimal_value = {{-1, -1, -1, 1 << 31}};
+  s21_decimal s21_min_decimal_value = {{-1, -1, -1, 1 << S21_SIGN_SHIFT}};
   s21_decimal s21_max_decimal_value = {{-1, -1, -1, 0}};
   s21_decimal zero_decimal = {{0, 0, 0, 0}};
   s21_decimal one_decimal = {{1, 0, 0, 0}};
-  s21_decimal one_half_decimal = {{5, 0, 0, 1 << 16}};
-  s21_decimal one_half_decimal_negated = {{5, 0, 0, 1 << 16 | 1 << 31}};
+  s21_decimal one_half_decimal = {{5, 0, 0, 1 << S21_EXP_SHIFT}};
+  s21_decimal one_half_decimal_negated = {
+      {5, 0, 0, 1 << S21_EXP_SHIFT | 1 << S21_SIGN_SHIFT}};
   int error_flag = 1;
 
   if (s21_is_less_or_equal(value, s21_max_decimal_value) &&
@@ -83,12 +84,12 @@ int s21_truncate(s21_decimal value, s21_decimal *result) {
   set_decimal_exp(&value, 0);
   *result = value;
 
-  return OK;
+  return S21_OK;
 }
 
 int s21_negate(s21_decimal value, s21_decimal *result) {
   *result = value;
-  unsigned int mask = 1 << 31;
+  unsigned int mask = 1 << S21_SIGN_SHIFT;
   if (check_bit(value.bits[3], 31) == 0) {
     result->bits[3] |= mask;
   } else {

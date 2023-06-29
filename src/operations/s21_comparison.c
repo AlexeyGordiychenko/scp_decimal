@@ -1,11 +1,11 @@
 #include "s21_common.h"
 
 int s21_is_less(s21_decimal value_1, s21_decimal value_2) {
-  return decimal_comparison(value_1, value_2, LESS);
+  return decimal_comparison(value_1, value_2, S21_LESS);
 }
 
 int s21_is_less_or_equal(s21_decimal value_1, s21_decimal value_2) {
-  return decimal_comparison(value_1, value_2, LESS_OR_EQUAL);
+  return decimal_comparison(value_1, value_2, S21_LESS_OR_EQUAL);
 }
 
 int s21_is_greater(s21_decimal value_1, s21_decimal value_2) {
@@ -17,7 +17,7 @@ int s21_is_greater_or_equal(s21_decimal value_1, s21_decimal value_2) {
 }
 
 int s21_is_equal(s21_decimal value_1, s21_decimal value_2) {
-  return decimal_comparison(value_1, value_2, EQUAL);
+  return decimal_comparison(value_1, value_2, S21_EQUAL);
 }
 
 int s21_is_not_equal(s21_decimal value_1, s21_decimal value_2) {

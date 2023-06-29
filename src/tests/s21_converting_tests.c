@@ -71,7 +71,7 @@ START_TEST(s21_dec_to_int_2) {
 END_TEST
 
 START_TEST(s21_dec_to_int_3) {
-  s21_decimal src = {{(unsigned)__INT_MAX__ + 1, 0, 0, 1 << 31}};
+  s21_decimal src = {{(unsigned)__INT_MAX__ + 1, 0, 0, 1 << S21_SIGN_SHIFT}};
   int dst = 12;
   s21_from_decimal_to_int(src, &dst);
   ck_assert_int_eq(dst, -__INT_MAX__ - 1);

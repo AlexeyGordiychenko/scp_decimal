@@ -3,7 +3,7 @@
 #include "s21_common.h"
 
 int s21_from_int_to_decimal(int src, s21_decimal *dst) {
-  int error_code = OK;
+  int error_code = S21_OK;
   if (dst != NULL) {
     int is_int_min = 0;
     int sign = 0;
@@ -27,22 +27,23 @@ int s21_from_int_to_decimal(int src, s21_decimal *dst) {
       dst->bits[3] = set_bit(dst->bits[3], 31);
     }
   } else {
-    error_code = ERROR;
+    error_code = S21_ERROR;
   }
 
   return error_code;
 }
 
 int s21_from_float_to_decimal(float src, s21_decimal *dst) {
-  int error_code = OK;
+  int error_code = S21_OK;
   if (isnan(src) || isinf(src) || dst == NULL || (0 < src && src < 1e-28) ||
       (powf(2, 96) - 1 < src || src < -(powf(2, 96) - 1))) {
-    error_code = ERROR;
+    error_code = S21_ERROR;
   }
 
-  if (error_code == OK && src == 0) {
+  if (error_code == S21_OK && src == 0) {
     dst->bits[3] = dst->bits[2] = dst->bits[1] = dst->bits[0] = 0;
-  } else if (error_code == OK && src < powf(2, 32) && src > -powf(2, 32) - 1) {
+  } else if (error_code == S21_OK && src < powf(2, 32) &&
+             src > -powf(2, 32) - 1) {
     dst->bits[3] = dst->bits[2] = dst->bits[1] = dst->bits[0] = 0;
 
     int sign = 0;
@@ -67,7 +68,7 @@ int s21_from_float_to_decimal(float src, s21_decimal *dst) {
     int exp = floor(log10(num) + 1) - floor(log10(src) + 1) + reminder;
 
     if (exp > 0) {
-      dst->bits[3] = (exp << 16);
+      dst->bits[3] = (exp << S21_EXP_SHIFT);
     }
     if (sign == 1) {
       dst->bits[3] = set_bit(dst->bits[3], 31);
@@ -78,7 +79,8 @@ int s21_from_float_to_decimal(float src, s21_decimal *dst) {
         dst->bits[i / 32] = set_bit(dst->bits[i / 32], i % 32);
       num = num >> 1;
     }
-  } else if (error_code == OK && src < powf(2, 64) && src > -powf(2, 64) - 1) {
+  } else if (error_code == S21_OK && src < powf(2, 64) &&
+             src > -powf(2, 64) - 1) {
     dst->bits[3] = dst->bits[2] = dst->bits[1] = dst->bits[0] = 0;
 
     int sign = 0;
@@ -97,7 +99,7 @@ int s21_from_float_to_decimal(float src, s21_decimal *dst) {
     int exp = floorf(log10(num) + 1) - floorf(log10(src) + 1);
 
     if (exp > 0) {
-      dst->bits[3] = (exp << 16);
+      dst->bits[3] = (exp << S21_EXP_SHIFT);
     }
     if (sign == 1) {
       dst->bits[3] = set_bit(dst->bits[3], 31);
@@ -109,7 +111,7 @@ int s21_from_float_to_decimal(float src, s21_decimal *dst) {
       num = num >> 1;
     }
 
-  } else if (error_code == OK &&
+  } else if (error_code == S21_OK &&
              (src >= powf(2, 64) || src <= -powf(2, 64) - 1)) {
     dst->bits[3] = dst->bits[2] = dst->bits[1] = dst->bits[0] = 0;
 
@@ -131,14 +133,14 @@ int s21_from_float_to_decimal(float src, s21_decimal *dst) {
       dst->bits[3] = set_bit(dst->bits[3], 31);
     }
   } else {
-    error_code = ERROR;
+    error_code = S21_ERROR;
   }
 
   return error_code;
 }
 
 int s21_from_decimal_to_int(s21_decimal src, int *dst) {
-  int error_code = OK;
+  int error_code = S21_OK;
 
   if (dst != NULL) {
     int exp = get_decimal_exp(src);
@@ -155,7 +157,7 @@ int s21_from_decimal_to_int(s21_decimal src, int *dst) {
     }
 
     if (num > ((unsigned)__INT_MAX__ + get_decimal_sign(src))) {
-      error_code = ERROR;
+      error_code = S21_ERROR;
     } else {
       *dst = num;
       if (get_decimal_sign(src)) {
@@ -163,14 +165,14 @@ int s21_from_decimal_to_int(s21_decimal src, int *dst) {
       }
     }
   } else {
-    error_code = ERROR;
+    error_code = S21_ERROR;
   }
 
   return error_code;
 }
 
 int s21_from_decimal_to_float(s21_decimal src, float *dst) {
-  int error_code = OK;
+  int error_code = S21_OK;
 
   if (dst != NULL) {
     int exp = get_decimal_exp(src);
@@ -183,7 +185,7 @@ int s21_from_decimal_to_float(s21_decimal src, float *dst) {
     *dst /= powf(10, exp);
     *dst = get_decimal_sign(src) == 0 ? *dst : -(*dst);
   } else {
-    error_code = ERROR;
+    error_code = S21_ERROR;
   }
 
   return error_code;

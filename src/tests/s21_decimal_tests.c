@@ -1,7 +1,7 @@
 #include "s21_decimal_tests.h"
 
 unsigned int sign_and_exp_bits(int sign, int exp) {
-  return (sign << 31) | (exp << 16);
+  return (sign << S21_SIGN_SHIFT) | (exp << S21_EXP_SHIFT);
 }
 
 int main(void) {

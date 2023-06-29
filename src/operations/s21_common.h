@@ -5,17 +5,18 @@
 
 #include "../s21_decimal.h"
 
-#define MAX_EXP 28
-#define EQUAL 1
-#define LESS 2
-#define LESS_OR_EQUAL 3
-#define OK 0
-#define ERROR 1
-#define HUGE_ERR 1
-#define SMALL_ERR 2
-#define DIV_ZERO_ERR 3
-#define TRUE 1
-#define FALSE 0
+#define S21_MAX_EXP 28
+#define S21_SIGN_SHIFT 31
+#define S21_EXP_SHIFT 16
+
+enum comparison_enum { S21_EQUAL = 1, S21_LESS, S21_LESS_OR_EQUAL };
+enum error_enum {
+  S21_OK,
+  S21_ERROR,
+  S21_HUGE_ERR = 1,
+  S21_SMALL_ERR,
+  S21_DIV_ZERO_ERR
+};
 
 static const s21_decimal S21_D_ONE = {{1, 0, 0, 0}};
 static const s21_decimal S21_D_ZERO = {{0, 0, 0, 0}};
