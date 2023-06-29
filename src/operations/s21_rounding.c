@@ -79,7 +79,7 @@ int s21_round(s21_decimal value, s21_decimal *result) {
 int s21_truncate(s21_decimal value, s21_decimal *result) {
   int exp = get_decimal_exp(value);
   while (exp--) {
-    decrease_exp(&value, 0);
+    divide_mantissa_by_10(&value, false);
   }
   set_decimal_exp(&value, 0);
   *result = value;
