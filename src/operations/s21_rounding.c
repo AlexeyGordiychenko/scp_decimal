@@ -20,8 +20,7 @@ int s21_floor(s21_decimal value, s21_decimal *result) {
     } else if (s21_is_equal(value, zero_decimal)) {
       *result = zero_decimal;
     } else if (s21_is_less(decimal_integer_part, zero_decimal)) {
-      if (s21_sub(decimal_integer_part, one_decimal, result)) 
-        error_flag = 1;
+      if (s21_sub(decimal_integer_part, one_decimal, result)) error_flag = 1;
     } else if (s21_is_greater_or_equal(decimal_integer_part, zero_decimal)) {
       *result = decimal_integer_part;
     }
