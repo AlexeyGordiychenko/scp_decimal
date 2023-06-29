@@ -23,13 +23,16 @@ OBJS_GCOV=$(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR_GCOV)/%.o,$(SRCS))
 
 LIB=s21_decimal.a
 TEST=test
+TEST_BUILD=test_build
 
-.PHONY: all $(TEST) $(LIB) gcov_report clean rebuild clang_n clang_i valgrind
+.PHONY: all $(TEST) $(TEST_BUILD) $(LIB) gcov_report clean rebuild clang_n clang_i valgrind
 
 all: $(LIB)
 
-$(TEST): $(OBJS_GCOV) $(OBJS_TEST)
-	$(CC) $(CFLAGS) $^ $(LDFLAGS) $(GCOVFLAGS) -o $@
+$(TEST_BUILD): $(OBJS_GCOV) $(OBJS_TEST)
+	$(CC) $(CFLAGS) $^ $(LDFLAGS) $(GCOVFLAGS) -o $(TEST)
+
+$(TEST): $(TEST_BUILD)
 	./$@
 
 $(LIB): $(OBJS)
@@ -71,5 +74,5 @@ clang_n:
 clang_i:
 	clang-format -i --style=Google *.[ch] $(SRC_DIR)/*.[ch] $(TEST_DIR)/*.[ch]
 
-valgrind: $(TEST)
+valgrind: $(TEST_BUILD)
 	valgrind --tool=memcheck --leak-check=yes ./$(TEST)
