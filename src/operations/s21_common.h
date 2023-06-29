@@ -20,6 +20,7 @@
 int check_bit(unsigned int numb, int pos);
 void print_binary(unsigned int num);
 unsigned int set_bit(unsigned int numb, int pos);
+void print_binary_range(unsigned int num, int l, int r);
 void print_full_binary(unsigned int num);
 void print_decimal_bits(s21_decimal obj);
 int get_decimal_sign(s21_decimal d);
