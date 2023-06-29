@@ -287,14 +287,15 @@ void set_same_exp(s21_decimal value, s21_decimal *result) {
   if (temp == 1) result->bits[3] = set_bit(result->bits[3], 31);
 }
 
-void sub_mantis(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
+int sub_mantis(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   result->bits[0] = 0;
   result->bits[1] = 0;
   result->bits[2] = 0;
   result->bits[3] = 0;
   s21_decimal first_val = s21_decimal_fabs(value_1);
   s21_decimal second_val = s21_decimal_fabs(value_2);
-
+  int flag = S21_OK;
+  
   if ((check_bit(value_1.bits[3], 31) == 0 &&
        check_bit(value_2.bits[3], 31) == 0)) {
     if (s21_is_greater_or_equal(first_val,
@@ -319,14 +320,16 @@ void sub_mantis(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
 
   if ((check_bit(value_1.bits[3], 31) == 0 &&
        check_bit(value_2.bits[3], 31) == 1)) {  // (+v1) - (-v2)
-    s21_add(first_val, second_val, result);
+    flag = s21_add(first_val, second_val, result);
   }
 
   if ((check_bit(value_1.bits[3], 31) == 1 &&
        check_bit(value_2.bits[3], 31) == 0)) {  // (-v1) - (+v2)
-    s21_add(first_val, second_val, result);
+    flag = s21_add(first_val, second_val, result);
+    if(flag == S21_HUGE_ERR) flag = S21_SMALL_ERR;
     result->bits[3] = set_bit(result->bits[3], 31);
   }
+  return flag;
 }
 
 int add_mantis(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
@@ -342,6 +345,7 @@ int add_mantis(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   if ((check_bit(value_1.bits[3], 31) == 1 &&
        check_bit(value_2.bits[3], 31) == 1)) {  // (-v1) + (-v2)
     flag = sum_same_sign(value_1, value_2, result);
+    if(flag == S21_HUGE_ERR) flag = S21_SMALL_ERR;
     result->bits[3] = set_bit(result->bits[3], 31);
   }
   if ((check_bit(value_1.bits[3], 31) == 0 &&
