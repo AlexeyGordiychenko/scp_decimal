@@ -66,7 +66,7 @@ START_TEST(s21_floor_100) {
   s21_decimal result;
 
   // print_decimal_bits(d1);
-  // printf("\nerror code -MAX_DECIMAL - 1 : %d\n", s21_floor(d1, &result));
+  printf("\nerror code -MAX_DECIMAL - 1 : %d\n", s21_floor(d1, &result));
   ck_assert_int_eq(s21_floor(d1, &result), 1);
   // ck_assert_int_eq(s21_is_equal(correct, result), S21_EQUAL);
 }
