@@ -175,12 +175,11 @@ int s21_from_decimal_to_float(s21_decimal src, float *dst) {
   if (dst != NULL) {
     int exp = get_decimal_exp(src);
 
-    *dst =  ((float)(unsigned int) src.bits[0]);
-    *dst += ((float)(unsigned int) src.bits[1]) * powf(2.f, 32.f);
-    *dst += ((float)(unsigned int) src.bits[2]) * powf(2.f, 64.f);
+    *dst = ((float)(unsigned int)src.bits[0]);
+    *dst += ((float)(unsigned int)src.bits[1]) * powf(2.f, 32.f);
+    *dst += ((float)(unsigned int)src.bits[2]) * powf(2.f, 64.f);
 
-    if (*dst != 0)
-      *dst = roundf(*dst * powf(10, exp) / pow(10, exp));
+    if (*dst != 0) *dst = roundf(*dst * powf(10, exp) / pow(10, exp));
     *dst /= powf(10, exp);
     *dst = get_decimal_sign(src) == 0 ? *dst : -(*dst);
   } else {

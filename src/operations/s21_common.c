@@ -21,19 +21,10 @@ void print_full_binary(unsigned int num) {
   }
 }
 
-void print_binary_range(unsigned int num, int l, int r) {
-  for (unsigned int i = 1 << r; i >= 1 << l; i = i >> 1) {
-    if ((num & i) != 0)
-      printf("1");
-    else
-      printf("0");
-  }
-}
-
 void print_decimal_bits(s21_decimal obj) {
-  printf("data : [%d...", check_bit(obj.bits[3], 31));
-  print_binary_range(obj.bits[3], 16, 23);
-  printf("...] num : [");
+  printf("data : [");
+  print_full_binary(obj.bits[3]);
+  printf("] num : [");
   print_full_binary(obj.bits[2]);
   printf("] [");
   print_full_binary(obj.bits[1]);

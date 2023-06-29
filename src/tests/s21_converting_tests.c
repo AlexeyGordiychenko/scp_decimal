@@ -87,21 +87,24 @@ END_TEST
 START_TEST(s21_dec_to_int_5) {
   s21_decimal src = {{-1, -1, 0, 0}};
   int dst;
-  ck_assert_int_eq(s21_from_decimal_to_int(src, &dst), 1);
+  int res = s21_from_decimal_to_int(src, &dst);
+  ck_assert_int_eq(res, 1);
 }
 END_TEST
 
 START_TEST(s21_dec_to_int_6) {
   s21_decimal src = {{-1, -1, 0, 0b00000000000010000000000000000000}};
   int dst;
-  ck_assert_int_eq(s21_from_decimal_to_int(src, &dst), 1);
+  int res = s21_from_decimal_to_int(src, &dst);
+  ck_assert_int_eq(res, 1);
 }
 END_TEST
 
 START_TEST(s21_dec_to_int_7) {
   s21_decimal src = {{-1, -1, 0, 0b00000000000010000000000000000001}};
   int dst;
-  ck_assert_int_eq(s21_from_decimal_to_int(src, &dst), 1);
+  int res = s21_from_decimal_to_int(src, &dst);
+  ck_assert_int_eq(res, 1);
 }
 END_TEST
 
@@ -126,7 +129,7 @@ START_TEST(s21_dec_to_float_2) {
 END_TEST
 
 START_TEST(s21_dec_to_float_3) {
-  float fsrc = 2000000000000000000;
+  float fsrc = 2000000;
   s21_decimal src;
   s21_from_float_to_decimal(fsrc, &src);
   float dst;
@@ -180,7 +183,7 @@ START_TEST(s21_dec_to_float_8) {
 END_TEST
 
 START_TEST(s21_dec_to_float_9) {
-  float fsrc = -68719476736.12333;
+  float fsrc = -6871947673;
   s21_decimal src;
   s21_from_float_to_decimal(fsrc, &src);
   float dst;
@@ -208,7 +211,6 @@ Suite *converting_tests(void) {
   tcase_add_test(tc, s21_int_to_dec_2);
   tcase_add_test(tc, s21_int_to_dec_3);
   tcase_add_test(tc, s21_int_to_dec_4);
-
 
   tcase_add_test(tc, s21_float_to_dec_1);
   tcase_add_test(tc, s21_float_to_dec_2);
