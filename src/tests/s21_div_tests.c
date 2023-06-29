@@ -7,7 +7,7 @@ START_TEST(s21_div_1) {
   s21_decimal correct = {{0x2b32, 0x0, 0x0, sign_and_exp_bits(0, 0)}};
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -19,7 +19,7 @@ START_TEST(s21_div_2) {
   s21_decimal correct = {{0xfb275636, 0x2, 0x0, sign_and_exp_bits(0, 0)}};
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -31,7 +31,7 @@ START_TEST(s21_div_3) {
   s21_decimal correct = {{0x4000, 0x0, 0x0, sign_and_exp_bits(1, 0)}};
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -43,7 +43,7 @@ START_TEST(s21_div_4) {
   s21_decimal correct = {{0x4000, 0x0, 0x0, sign_and_exp_bits(0, 0)}};
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -55,7 +55,7 @@ START_TEST(s21_div_5) {
   s21_decimal correct = {{0x80000034, 0x3, 0x0, sign_and_exp_bits(1, 0)}};
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -68,7 +68,7 @@ START_TEST(s21_div_6) {
       {0x2417874a, 0xfbb2c4c4, 0x209a2d91, sign_and_exp_bits(1, 27)}};
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -80,7 +80,7 @@ START_TEST(s21_div_7) {
   s21_decimal correct = {{0xf, 0x0, 0x0, sign_and_exp_bits(1, 1)}};
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -92,7 +92,7 @@ START_TEST(s21_div_8) {
   s21_decimal correct = S21_D_ZERO;
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -104,7 +104,7 @@ START_TEST(s21_div_9) {
   s21_decimal correct = S21_D_ZERO;
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -141,7 +141,7 @@ START_TEST(s21_div_12) {
       {0x25555555, 0x9101058d, 0x4b64e186, sign_and_exp_bits(1, 28)}};
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -154,7 +154,7 @@ START_TEST(s21_div_13) {
       {0x35555555, 0xcf2607ee, 0x6bb4afe4, sign_and_exp_bits(1, 28)}};
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -167,7 +167,7 @@ START_TEST(s21_div_14) {
       {0x35555555, 0xcf2607ee, 0x6bb4afe4, sign_and_exp_bits(0, 28)}};
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -180,7 +180,7 @@ START_TEST(s21_div_15) {
       {0x25555555, 0x9101058d, 0x4b64e186, sign_and_exp_bits(0, 28)}};
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -193,7 +193,7 @@ START_TEST(s21_div_16) {
       {0xaaaaaab, 0x296e0196, 0x158a8994, sign_and_exp_bits(0, 28)}};
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -205,7 +205,7 @@ START_TEST(s21_div_17) {
   s21_decimal correct = {{0xa, 0x0, 0x0, sign_and_exp_bits(0, 1)}};
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -219,7 +219,7 @@ START_TEST(s21_div_18) {
       {0xffffffff, 0xffffffff, 0xffffffff, sign_and_exp_bits(0, 0)}};
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -246,7 +246,7 @@ START_TEST(s21_div_20) {
       {0x49249249, 0x92492492, 0x24924924, sign_and_exp_bits(0, 0)}};
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -271,7 +271,7 @@ START_TEST(s21_div_22) {
   s21_decimal correct = S21_D_ZERO;
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -283,7 +283,7 @@ START_TEST(s21_div_23) {
   s21_decimal correct = {{0x61a80, 0x0, 0x0, sign_and_exp_bits(0, 0)}};
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -296,7 +296,7 @@ START_TEST(s21_div_24) {
       {0xfdd2fc8e, 0x675951f9, 0x1d0cc3e1, sign_and_exp_bits(1, 15)}};
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -309,7 +309,7 @@ START_TEST(s21_div_25) {
       {0xd7a20bba, 0x6737764b, 0x1d0cc3e1, sign_and_exp_bits(1, 15)}};
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -322,7 +322,7 @@ START_TEST(s21_div_26) {
       {0xe75431c4, 0xb87b8fff, 0xb4848857, sign_and_exp_bits(0, 24)}};
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -335,7 +335,7 @@ START_TEST(s21_div_27) {
       {0x373bf827, 0x4ef17458, 0x20d97f8d, sign_and_exp_bits(0, 20)}};
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -347,7 +347,7 @@ START_TEST(s21_div_28) {
   s21_decimal correct = {{0x1, 0x0, 0x0, sign_and_exp_bits(0, 0)}};
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -360,7 +360,7 @@ START_TEST(s21_div_29) {
       {0x530431ca, 0x150ebbe, 0x0, sign_and_exp_bits(0, 24)}};
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -397,7 +397,7 @@ START_TEST(s21_div_32) {
       {0xe75431c4, 0xb87b8fff, 0xb4848857, sign_and_exp_bits(0, 24)}};
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
@@ -411,7 +411,7 @@ START_TEST(s21_div_33) {
       {0x33333333, 0x33333333, 0x33333333, sign_and_exp_bits(0, 27)}};
   s21_decimal result;
 
-  ck_assert_int_eq(s21_div(d1, d2, &result), OK);
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
 END_TEST
