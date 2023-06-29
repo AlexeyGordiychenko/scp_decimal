@@ -12,6 +12,7 @@ int main(void) {
                             add_tests(),
                             sub_tests(),
                             div_tests(),
+                            floor_tests(),
                             NULL};
 
   for (int i = 0; decimal_tests[i] != NULL; i++) {
