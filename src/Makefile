@@ -49,13 +49,15 @@ $(OBJ_DIR_GCOV)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(OBJ_DIR_GCOV)
 	$(CC) $(CFLAGS) $(GCOVFLAGS) -c $< -o $@
 
-gcov_report: $(TEST)
+gcov_report: $(TEST_BUILD)
+	./$(TEST) || true
 	mkdir -p $(GCOV_DIR)
 	rm -rf $(GCOV_DIR)/*.gcda $(GCOV_DIR)/*.gcno
 	gcovr --html-details -o $(GCOV_DIR)/index.html --filter "$(SRC_DIR)/*"
 	open $(GCOV_DIR)/index.html
 
-lcov_report: $(TEST)
+lcov_report: $(TEST_BUILD)
+	./$(TEST) || true
 	mkdir -p $(GCOV_DIR)
 	lcov -o $(GCOV_DIR)/Coverage_Report.info -c -d $(OBJ_DIR_GCOV)
 	lcov -r $(GCOV_DIR)/Coverage_Report.info  -o $(GCOV_DIR)/Coverage_Report.info '/Library/*'
