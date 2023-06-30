@@ -3,7 +3,6 @@ CFLAGS=-Wall -Wextra -Werror -std=c11 -Wno-unused-parameter -g -O0
 LDFLAGS=-lcheck -pthread -lm
 ifeq ($(shell uname), Linux)
 	LDFLAGS += -lsubunit
-else ifeq ($(shell uname), Darwin)
 endif
 
 GCOVFLAGS=--coverage

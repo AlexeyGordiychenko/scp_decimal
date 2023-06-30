@@ -1,6 +1,7 @@
 #ifndef S21_COMMON_H
 #define S21_COMMON_H
 
+#include <math.h>
 #include <stdbool.h>
 
 #include "../s21_decimal.h"
@@ -55,4 +56,7 @@ void right_shift_bits(s21_decimal* d);
 void set_bit96(s21_decimal* d, int bit_position);
 void div_mantissas(s21_decimal value_1, s21_decimal value_2,
                    s21_decimal* quotient, s21_decimal* remainder);
+void from_float_to_decimal_small(float src, s21_decimal* dst);
+void from_float_to_decimal_medium(float src, s21_decimal* dst);
+void from_float_to_decimal_large(float src, s21_decimal* dst);
 #endif

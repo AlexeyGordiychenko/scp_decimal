@@ -505,3 +505,93 @@ void div_mantissas(s21_decimal value_1, s21_decimal value_2,
 
   *remainder = temp_remainder;
 }
+
+void from_float_to_decimal_small(float src, s21_decimal *dst) {
+  dst->bits[3] = dst->bits[2] = dst->bits[1] = dst->bits[0] = 0;
+
+  int sign = 0;
+  if (src < 0) {
+    sign = 1;
+    src = -src;
+  }
+
+  int reminder = 0;
+  while (src < 1) {
+    src *= 10;
+    ++reminder;
+  }
+
+  unsigned long num = src;
+  unsigned long next = src;
+  for (int i = 0; next < powf(2, 32) && i < 100; ++i) {
+    num = next;
+    next = src * powf(10, i);
+  }
+
+  int exp = floor(log10(num) + 1) - floor(log10(src) + 1) + reminder;
+
+  if (exp > 0) {
+    dst->bits[3] = (exp << S21_EXP_SHIFT);
+  }
+  if (sign == 1) {
+    dst->bits[3] = set_bit(dst->bits[3], 31);
+  }
+
+  for (int i = 0; i < 32; ++i) {
+    if ((num & 1) == 1) dst->bits[i / 32] = set_bit(dst->bits[i / 32], i % 32);
+    num = num >> 1;
+  }
+}
+
+void from_float_to_decimal_medium(float src, s21_decimal *dst) {
+  dst->bits[3] = dst->bits[2] = dst->bits[1] = dst->bits[0] = 0;
+
+  int sign = 0;
+  if (src < 0) {
+    sign = 1;
+    src = -src;
+  }
+
+  unsigned long long num = src;
+  unsigned long long next = src;
+  for (int i = 0; next < powf(2, 64) && i < 100; ++i) {
+    num = next;
+    next = src * powf(10, i);
+  }
+
+  int exp = floorf(log10(num) + 1) - floorf(log10(src) + 1);
+
+  if (exp > 0) {
+    dst->bits[3] = (exp << S21_EXP_SHIFT);
+  }
+  if (sign == 1) {
+    dst->bits[3] = set_bit(dst->bits[3], 31);
+  }
+
+  for (int i = 0; i < 64; ++i) {
+    if ((num & 1) == 1) dst->bits[i / 32] = set_bit(dst->bits[i / 32], i % 32);
+    num = num >> 1;
+  }
+}
+
+void from_float_to_decimal_large(float src, s21_decimal *dst) {
+  dst->bits[3] = dst->bits[2] = dst->bits[1] = dst->bits[0] = 0;
+
+  int sign = 0;
+  if (src < 0) {
+    sign = 1;
+    src = -src;
+  }
+
+  float scaledValue = src;
+
+  for (int i = 0; i < 96; ++i) {
+    if (fmodf(floorf(scaledValue), 2) == 1)
+      dst->bits[i / 32] = set_bit(dst->bits[i / 32], i % 32);
+    scaledValue /= 2;
+  }
+
+  if (sign == 1) {
+    dst->bits[3] = set_bit(dst->bits[3], 31);
+  }
+}
