@@ -1,7 +1,7 @@
 #include "s21_common.h"
 
 int check_bit(unsigned int numb, int pos) {
-  int a = 1 << pos;
+  int a = 1u << pos;
   return (numb & a) > 0 ? 1 : 0;
 }
 
@@ -13,7 +13,7 @@ void print_binary(unsigned int num) {
 }
 
 void print_full_binary(unsigned int num) {
-  for (unsigned int i = 1 << S21_SIGN_SHIFT; i > 0; i = i >> 1) {
+  for (unsigned int i = 1u << S21_SIGN_SHIFT; i > 0; i = i >> 1) {
     if ((num & i) != 0)
       printf("1");
     else
@@ -52,11 +52,11 @@ int get_decimal_exp(s21_decimal d) {
 }
 
 void set_decimal_sign(s21_decimal *d, int sign) {
-  d->bits[3] = (d->bits[3] & 0x7FFFFFFF) | (sign << S21_SIGN_SHIFT);
+  d->bits[3] = (d->bits[3] & 0x7FFFFFFF) | ((unsigned)sign << S21_SIGN_SHIFT);
 }
 
 void set_decimal_exp(s21_decimal *d, int exp) {
-  d->bits[3] = (d->bits[3] & 0xFF00FFFF) | (exp << S21_EXP_SHIFT);
+  d->bits[3] = (d->bits[3] & 0xFF00FFFF) | ((unsigned)exp << S21_EXP_SHIFT);
 }
 
 int decimal_is_zero(s21_decimal d) {
@@ -423,12 +423,12 @@ bool subtract_bits(s21_decimal *minuend, s21_decimal subtrahend) {
 }
 
 bool add_bits(s21_decimal *accumulator, s21_decimal addend) {
-  unsigned long long sum;
   unsigned long long carry = 0;
   bool res = true;
   s21_decimal tmp = *accumulator;
 
   for (int i = 0; i < 3; i++) {
+    unsigned long long sum;
     sum = carry + tmp.bits[i] + addend.bits[i];
     tmp.bits[i] = (unsigned int)(sum & 0xFFFFFFFF);
     carry = (sum >> 32);

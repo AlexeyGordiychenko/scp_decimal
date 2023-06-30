@@ -92,7 +92,8 @@ START_TEST(s21_dec_to_int_2) {
 END_TEST
 
 START_TEST(s21_dec_to_int_3) {
-  s21_decimal src = {{(unsigned)__INT_MAX__ + 1, 0, 0, 1 << S21_SIGN_SHIFT}};
+  s21_decimal src = {
+      {(unsigned)__INT_MAX__ + 1, 0, 0, (unsigned)1 << S21_SIGN_SHIFT}};
   int dst;
   s21_from_decimal_to_int(src, &dst);
   ck_assert_int_eq(dst, -__INT_MAX__ - 1);
@@ -101,7 +102,7 @@ END_TEST
 
 START_TEST(s21_dec_to_int_4) {
   s21_decimal src = {{0, 0, 0, 0}};
-  ck_assert_int_eq(s21_from_decimal_to_int(src, NULL) , S21_ERROR);
+  ck_assert_int_eq(s21_from_decimal_to_int(src, NULL), S21_ERROR);
 }
 END_TEST
 
@@ -123,6 +124,13 @@ START_TEST(s21_dec_to_int_7) {
   s21_decimal src = {{-1, -1, 0, 0b00000000000010000000000000000001}};
   int dst;
   ck_assert_int_eq(s21_from_decimal_to_int(src, &dst), S21_ERROR);
+}
+END_TEST
+
+START_TEST(s21_dec_to_int_8) {
+  s21_decimal src = {{1, 0, 0, 0b00000000000011000000000000000001}};
+  int dst;
+  ck_assert_int_eq(s21_from_decimal_to_int(src, &dst), S21_OK);
 }
 END_TEST
 
@@ -245,6 +253,7 @@ Suite *converting_tests(void) {
   tcase_add_test(tc, s21_dec_to_int_5);
   tcase_add_test(tc, s21_dec_to_int_6);
   tcase_add_test(tc, s21_dec_to_int_7);
+  tcase_add_test(tc, s21_dec_to_int_8);
 
   tcase_add_test(tc, s21_dec_to_float_1);
   tcase_add_test(tc, s21_dec_to_float_2);

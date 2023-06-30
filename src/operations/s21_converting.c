@@ -2,7 +2,9 @@
 
 int s21_from_int_to_decimal(int src, s21_decimal *dst) {
   int error_code = S21_OK;
-  if (dst != NULL) {
+  if (dst == NULL) {
+    error_code = S21_ERROR;
+  } else {
     int is_int_min = 0;
     int sign = 0;
 
@@ -24,22 +26,20 @@ int s21_from_int_to_decimal(int src, s21_decimal *dst) {
     if (sign == 1) {
       dst->bits[3] = set_bit(dst->bits[3], 31);
     }
-  } else {
-    error_code = S21_ERROR;
   }
 
   return error_code;
 }
 
 int s21_from_float_to_decimal(float src, s21_decimal *dst) {
-  int error = S21_OK;
+  int error_code = S21_OK;
 
   if (isnan(src) || isinf(src) || dst == NULL) {
-    error = S21_ERROR;
+    error_code = S21_ERROR;
   } else if (src > 0 && src < 1e-28) {
-    error = S21_ERROR;
+    error_code = S21_ERROR;
   } else if (src > powf(2, 96) - 1 || src < -(powf(2, 96) - 1)) {
-    error = S21_ERROR;
+    error_code = S21_ERROR;
   } else {
     if (src == 0) {
       dst->bits[3] = dst->bits[2] = dst->bits[1] = dst->bits[0] = 0;
@@ -52,13 +52,15 @@ int s21_from_float_to_decimal(float src, s21_decimal *dst) {
     }
   }
 
-  return error;
+  return error_code;
 }
 
 int s21_from_decimal_to_int(s21_decimal src, int *dst) {
   int error_code = S21_OK;
 
-  if (dst != NULL) {
+  if (dst == NULL) {
+    error_code = S21_ERROR;
+  } else {
     int exp = get_decimal_exp(src);
 
     unsigned long long num = 0;
@@ -85,8 +87,6 @@ int s21_from_decimal_to_int(s21_decimal src, int *dst) {
         *dst = -(*dst);
       }
     }
-  } else {
-    error_code = S21_ERROR;
   }
 
   return error_code;
@@ -95,7 +95,9 @@ int s21_from_decimal_to_int(s21_decimal src, int *dst) {
 int s21_from_decimal_to_float(s21_decimal src, float *dst) {
   int error_code = S21_OK;
 
-  if (dst != NULL) {
+  if (dst == NULL) {
+    error_code = S21_ERROR;
+  } else {
     int exp = get_decimal_exp(src);
 
     *dst = ((float)(unsigned int)src.bits[0]);
@@ -104,8 +106,6 @@ int s21_from_decimal_to_float(s21_decimal src, float *dst) {
 
     *dst /= powf(10.f, exp);
     if (get_decimal_sign(src)) *dst = -(*dst);
-  } else {
-    error_code = S21_ERROR;
   }
 
   return error_code;
