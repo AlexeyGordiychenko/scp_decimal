@@ -238,6 +238,7 @@ int sum_same_sign(s21_decimal value_1, s21_decimal value_2,
     return S21_HUGE_ERR;
   else if (carry != 0) {
     decrease_exp(&value_1, 1);
+    decrease_exp(&value_2, 1);
     result->bits[0] = 0;
     result->bits[1] = 0;
     result->bits[2] = 0;
