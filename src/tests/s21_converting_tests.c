@@ -3,75 +3,75 @@
 START_TEST(s21_int_to_dec_1) {
   int src = 0;
   s21_decimal dst;
-  ck_assert_int_eq(s21_from_int_to_decimal(src, &dst), 0);
+  ck_assert_int_eq(s21_from_int_to_decimal(src, &dst), S21_OK);
 }
 END_TEST
 
 START_TEST(s21_int_to_dec_2) {
   int src = __INT_MAX__;
   s21_decimal dst;
-  ck_assert_int_eq(s21_from_int_to_decimal(src, &dst), 0);
+  ck_assert_int_eq(s21_from_int_to_decimal(src, &dst), S21_OK);
 }
 END_TEST
 
 START_TEST(s21_int_to_dec_3) {
   int src = -__INT_MAX__ - 1;
   s21_decimal dst;
-  ck_assert_int_eq(s21_from_int_to_decimal(src, &dst), 0);
+  ck_assert_int_eq(s21_from_int_to_decimal(src, &dst), S21_OK);
 }
 END_TEST
 
 START_TEST(s21_int_to_dec_4) {
-  ck_assert_int_eq(s21_from_int_to_decimal(0, NULL), 1);
+  ck_assert_int_eq(s21_from_int_to_decimal(0, NULL), S21_ERROR);
 }
 END_TEST
 
 START_TEST(s21_float_to_dec_1) {
   float src = 0.1234;
   s21_decimal dst;
-  ck_assert_int_eq(s21_from_float_to_decimal(src, &dst), 0);
+  ck_assert_int_eq(s21_from_float_to_decimal(src, &dst), S21_OK);
 }
 END_TEST
 
 START_TEST(s21_float_to_dec_2) {
   float src = 0;
   s21_decimal dst;
-  ck_assert_int_eq(s21_from_float_to_decimal(src, &dst), 0);
+  ck_assert_int_eq(s21_from_float_to_decimal(src, &dst), S21_OK);
 }
 END_TEST
 
 START_TEST(s21_float_to_dec_3) {
   float src = -0.1234;
   s21_decimal dst;
-  ck_assert_int_eq(s21_from_float_to_decimal(src, &dst), 0);
+  ck_assert_int_eq(s21_from_float_to_decimal(src, &dst), S21_OK);
 }
 END_TEST
 
 START_TEST(s21_float_to_dec_4) {
   float src = -powf(2, 70);
   s21_decimal dst;
-  ck_assert_int_eq(s21_from_float_to_decimal(src, &dst), 0);
+  ck_assert_int_eq(s21_from_float_to_decimal(src, &dst), S21_OK);
 }
 END_TEST
 
 START_TEST(s21_float_to_dec_5) {
   float src = 0x1.fffffep+127f;
   s21_decimal dst;
-  ck_assert_int_eq(s21_from_float_to_decimal(src, &dst), 1);
+  ck_assert_int_eq(s21_from_float_to_decimal(src, &dst), S21_ERROR);
 }
 END_TEST
 
 START_TEST(s21_float_to_dec_6) {
   float src = NAN;
   s21_decimal dst;
-  ck_assert_int_eq(s21_from_float_to_decimal(src, &dst), 1);
+  ck_assert_int_eq(s21_from_float_to_decimal(src, &dst), S21_ERROR);
 }
 END_TEST
 
 START_TEST(s21_float_to_dec_7) {
   float src = 3E-40;
   s21_decimal dst;
-  ck_assert_int_eq(s21_from_float_to_decimal(src, &dst), 1);
+  ck_assert_int_eq(s21_from_float_to_decimal(src, &dst), S21_ERROR);
 }
 END_TEST
 
@@ -101,31 +101,28 @@ END_TEST
 
 START_TEST(s21_dec_to_int_4) {
   s21_decimal src = {{0, 0, 0, 0}};
-  ck_assert_int_eq(s21_from_decimal_to_int(src, NULL), 1);
+  ck_assert_int_eq(s21_from_decimal_to_int(src, NULL) , S21_ERROR);
 }
 END_TEST
 
 START_TEST(s21_dec_to_int_5) {
   s21_decimal src = {{-1, -1, 0, 0}};
   int dst;
-  int res = s21_from_decimal_to_int(src, &dst);
-  ck_assert_int_eq(res, 1);
+  ck_assert_int_eq(s21_from_decimal_to_int(src, &dst), S21_ERROR);
 }
 END_TEST
 
 START_TEST(s21_dec_to_int_6) {
   s21_decimal src = {{-1, -1, 0, 0b00000000000010000000000000000000}};
   int dst;
-  int res = s21_from_decimal_to_int(src, &dst);
-  ck_assert_int_eq(res, 1);
+  ck_assert_int_eq(s21_from_decimal_to_int(src, &dst), S21_ERROR);
 }
 END_TEST
 
 START_TEST(s21_dec_to_int_7) {
   s21_decimal src = {{-1, -1, 0, 0b00000000000010000000000000000001}};
   int dst;
-  int res = s21_from_decimal_to_int(src, &dst);
-  ck_assert_int_eq(res, 1);
+  ck_assert_int_eq(s21_from_decimal_to_int(src, &dst), S21_ERROR);
 }
 END_TEST
 
@@ -161,7 +158,7 @@ END_TEST
 
 START_TEST(s21_dec_to_float_4) {
   s21_decimal src = {{0, 0, 0, 0}};
-  ck_assert_int_eq(s21_from_decimal_to_float(src, NULL), 1);
+  ck_assert_int_eq(s21_from_decimal_to_float(src, NULL), S21_ERROR);
 }
 END_TEST
 
@@ -224,7 +221,7 @@ START_TEST(s21_dec_to_float_10) {
 END_TEST
 
 Suite *converting_tests(void) {
-  Suite *s = suite_create("\033[33m**S21_CONVERTING**\033[0m");
+  Suite *s = suite_create(PRE_TEST_HEADER "S21_CONVERTING" POST_TEST_HEADER);
   TCase *tc = tcase_create("converting_tc");
 
   suite_add_tcase(s, tc);
