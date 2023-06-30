@@ -64,7 +64,7 @@ int s21_from_decimal_to_int(s21_decimal src, int *dst) {
     unsigned long long num = 0;
     for (int i = 0; i < 96; ++i) {
       if (check_bit(src.bits[i / 32], i % 32)) {
-        num += pow(2, i);
+        num += (unsigned long long)pow(2, i);
         if (num > 10 && exp) {
           num /= 10;
           exp--;

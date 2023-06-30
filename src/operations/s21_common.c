@@ -523,9 +523,9 @@ void from_float_to_decimal_small(float src, s21_decimal *dst) {
 
   unsigned long num = src;
   unsigned long next = src;
-  for (int i = 0; next < powf(2, 32) && i < 100; ++i) {
+  for (int i = 0; next < powf(2, 32) && next != 0; ++i) {
     num = next;
-    next = src * powf(10, i);
+    next = src * powf(10.f, i);
   }
 
   int exp = floor(log10(num) + 1) - floor(log10(src) + 1) + reminder;
@@ -554,9 +554,9 @@ void from_float_to_decimal_medium(float src, s21_decimal *dst) {
 
   unsigned long long num = src;
   unsigned long long next = src;
-  for (int i = 0; next < powf(2, 64) && i < 100; ++i) {
+  for (int i = 0; next < pow(2, 64) && next != 0; ++i) {
     num = next;
-    next = src * powf(10, i);
+    next = src * powf(10.f, i);
   }
 
   int exp = floorf(log10(num) + 1) - floorf(log10(src) + 1);
