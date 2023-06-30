@@ -149,7 +149,7 @@ void decimal_normalization(s21_decimal *d1, s21_decimal *d2) {
   int exp1 = get_decimal_exp(*d1);
   int exp2 = get_decimal_exp(*d2);
 
-  if (exp1 == exp2) return;
+  if (exp1 == exp2 && exp1 <= S21_MAX_EXP) return;
 
   int tmp_exp;
 
@@ -168,12 +168,13 @@ void decimal_normalization(s21_decimal *d1, s21_decimal *d2) {
 
   // if increase didn't help, then descrease
   int min_exp = (exp1 > exp2) ? exp2 : exp1;
+  if (min_exp > S21_MAX_EXP) min_exp = S21_MAX_EXP;
 
   while (exp1 > min_exp) {
-    exp1 = decrease_exp(d1, (exp1 == (min_exp + 1)));
+    exp1 = decrease_exp(d1, (exp1 == (min_exp + 1) && min_exp != S21_MAX_EXP));
   }
   while (exp2 > min_exp) {
-    exp2 = decrease_exp(d2, (exp2 == (min_exp + 1)));
+    exp2 = decrease_exp(d2, (exp2 == (min_exp + 1) && min_exp != S21_MAX_EXP));
   }
 }
 
@@ -193,9 +194,7 @@ int decimal_comparison(s21_decimal value_1, s21_decimal value_2, int mode) {
   } else if (value1_sign != value2_sign) {
     res = mode != S21_EQUAL && value1_sign;
   } else {
-    if (get_decimal_exp(value_1) != get_decimal_exp(value_2)) {
-      decimal_normalization(&value_1, &value_2);
-    }
+    decimal_normalization(&value_1, &value_2);
 
     int eq = false;
     int less = false;
