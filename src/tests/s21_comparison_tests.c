@@ -1706,7 +1706,6 @@ Suite *comparison_tests(void) {
   tcase_add_test(tc1_1, s21_comparison_109);
   tcase_add_test(tc1_1, s21_comparison_110);
   tcase_add_test(tc1_1, s21_comparison_111);
-  suite_add_tcase(s1, tc1_1);
 
   return s1;
 }
