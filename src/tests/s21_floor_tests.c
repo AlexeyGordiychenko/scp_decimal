@@ -63,10 +63,18 @@ START_TEST(s21_floor_100) {
   // s21_floor(S21_MIN_DECIMAL_VALUE) = error code 1
   s21_decimal d1 = {{-1, -1, -1, sign_and_exp_bits(1, 0)}};
   // s21_decimal correct = {{0, 0, 0, 0}};
+  // s21_decimal one = {{1, 0, 0, 0}};
+
   s21_decimal result;
 
   // print_decimal_bits(d1);
-  printf("\nerror code -MAX_DECIMAL - 1 : %d\n", s21_floor(d1, &result));
+  // s21_truncate(d1, &result);
+  // print_decimal_bits(result);
+
+  // printf("\nerror code sub(MAX_DECIMAL - 1) : %d\n", s21_sub(d1, one, &result));
+  // printf("\nerror code -MAX_DECIMAL - 1 : %d\n", s21_floor(d1, &result));
+  // print_decimal_bits(result);
+
   ck_assert_int_eq(s21_floor(d1, &result), 1);
   // ck_assert_int_eq(s21_is_equal(correct, result), S21_EQUAL);
 }

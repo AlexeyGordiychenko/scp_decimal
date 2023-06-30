@@ -4,13 +4,12 @@ int s21_floor(s21_decimal value, s21_decimal *result) {
   // MIN_DECIMAL_VALUE -79,228,162,514,264,337,593,543,950,335
   // MAX_DECIMAL_VALUE 79,228,162,514,264,337,593,543,950,335
   s21_decimal s21_min_decimal_value = {{-1, -1, -1, 1 << S21_SIGN_SHIFT}};
-  s21_decimal s21_max_decimal_value = {{-1, -1, -1, 0}};
+  // s21_decimal s21_max_decimal_value = {{-1, -1, -1, 0}};
   s21_decimal zero_decimal = {{0, 0, 0, 0}};
   s21_decimal one_decimal = {{1, 0, 0, 0}};
   int error_flag = 1;
 
-  if (s21_is_less_or_equal(value, s21_max_decimal_value) &&
-      s21_is_greater_or_equal(value, s21_min_decimal_value)) {
+  if (s21_is_not_equal(value, s21_min_decimal_value)) {
     error_flag = 0;
     s21_decimal decimal_integer_part = zero_decimal;
     s21_truncate(value, &decimal_integer_part);
@@ -19,8 +18,9 @@ int s21_floor(s21_decimal value, s21_decimal *result) {
       *result = decimal_integer_part;
     } else if (s21_is_equal(value, zero_decimal)) {
       *result = zero_decimal;
-    } else if (s21_is_less(decimal_integer_part, zero_decimal)) {
-      if (s21_sub(decimal_integer_part, one_decimal, result)) error_flag = 1;
+    } else if (s21_is_less_or_equal(decimal_integer_part, zero_decimal)) {
+      int sub_flag = s21_sub(decimal_integer_part, one_decimal, result);
+      if (sub_flag) error_flag = 1;
     } else if (s21_is_greater_or_equal(decimal_integer_part, zero_decimal)) {
       *result = decimal_integer_part;
     }
