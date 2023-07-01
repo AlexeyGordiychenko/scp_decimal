@@ -47,7 +47,7 @@ s21_decimal s21_decimal_fabs(s21_decimal value);
 void set_same_exp(s21_decimal value, s21_decimal* result);
 int sub_mantis(s21_decimal value1, s21_decimal value2, s21_decimal* result);
 int add_mantis(s21_decimal value1, s21_decimal value2, s21_decimal* result);
-void divide_mantissa_by_10(s21_decimal* d, bool with_round);
+bool divide_mantissa_by_10(s21_decimal* d, bool with_round);
 bool multiply_mantissa_by_10(s21_decimal* d);
 bool subtract_bits(s21_decimal* minuend, s21_decimal subtrahend);
 bool add_bits(s21_decimal* accumulator, s21_decimal addend);
@@ -59,4 +59,5 @@ void div_mantissas(s21_decimal value_1, s21_decimal value_2,
 void from_float_to_decimal_small(float src, s21_decimal* dst);
 void from_float_to_decimal_medium(float src, s21_decimal* dst);
 void from_float_to_decimal_large(float src, s21_decimal* dst);
+void truncate_trailing_zeros(s21_decimal* d);
 #endif

@@ -355,9 +355,8 @@ int add_mantis(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   return flag;
 }
 
-void divide_mantissa_by_10(s21_decimal *d, bool with_round) {
+bool divide_mantissa_by_10(s21_decimal *d, bool with_round) {
   // Divide the 96-bit integer by 10.
-
   unsigned long long remainder = 0;
 
   for (int i = 2; i >= 0; --i) {
@@ -370,6 +369,8 @@ void divide_mantissa_by_10(s21_decimal *d, bool with_round) {
   if (with_round && ((remainder > 5 || (remainder == 5 && d->bits[0] & 1)))) {
     d->bits[0]++;
   }
+
+  return remainder == 0;
 }
 
 bool multiply_mantissa_by_10(s21_decimal *d) {
@@ -595,4 +596,23 @@ void from_float_to_decimal_large(float src, s21_decimal *dst) {
   if (sign == 1) {
     dst->bits[3] = set_bit(dst->bits[3], 31);
   }
+}
+
+void truncate_trailing_zeros(s21_decimal *d) {
+  // remove the trailing zeros from decimal
+  // and decrease exp
+
+  int exp = get_decimal_exp(*d);
+  int exp_new = exp;
+  bool res = true;
+  while (exp_new > 0 && res) {
+    s21_decimal tmp = *d;
+    if (divide_mantissa_by_10(&tmp, false)) {
+      exp_new--;
+      *d = tmp;
+    } else {
+      res = false;
+    }
+  }
+  if (exp != exp_new) set_decimal_exp(d, exp_new);
 }
