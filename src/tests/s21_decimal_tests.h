@@ -24,5 +24,6 @@ Suite *add_tests(void);
 Suite *sub_tests(void);
 Suite *div_tests(void);
 Suite *floor_tests(void);
+Suite *round_tests(void);
 
 #endif  // S21_DECIMAL_TESTS_H
