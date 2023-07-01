@@ -61,11 +61,11 @@ START_TEST(s21_div_5) {
 END_TEST
 
 START_TEST(s21_div_6) {
-  //-101 / 10.01 = -10.089910089910089910089910090
+  //-101 / 10.01 = -10.08991008991008991008991009
   s21_decimal d1 = {{0x65, 0x0, 0x0, sign_and_exp_bits(1, 0)}};
   s21_decimal d2 = {{0x3e9, 0x0, 0x0, sign_and_exp_bits(0, 2)}};
   s21_decimal correct = {
-      {0x2417874a, 0xfbb2c4c4, 0x209a2d91, sign_and_exp_bits(1, 27)}};
+      {0x36cf2721, 0x32c513ad, 0x3429e28, sign_and_exp_bits(1, 26)}};
   s21_decimal result;
 
   ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
@@ -199,10 +199,10 @@ START_TEST(s21_div_16) {
 END_TEST
 
 START_TEST(s21_div_17) {
-  // 7.0 / 7 = 1.0
+  // 7.0 / 7 = 1
   s21_decimal d1 = {{0x46, 0x0, 0x0, sign_and_exp_bits(0, 1)}};
   s21_decimal d2 = {{0x7, 0x0, 0x0, sign_and_exp_bits(0, 0)}};
-  s21_decimal correct = {{0xa, 0x0, 0x0, sign_and_exp_bits(0, 1)}};
+  s21_decimal correct = {{0x1, 0x0, 0x0, sign_and_exp_bits(0, 0)}};
   s21_decimal result;
 
   ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
@@ -289,11 +289,11 @@ START_TEST(s21_div_23) {
 END_TEST
 
 START_TEST(s21_div_24) {
-  //-936582642837 / 0.1041747302401649 = -8990497414083.032301561904270
+  //-936582642837 / 0.1041747302401649 = -8990497414083.03230156190427
   s21_decimal d1 = {{0x10acfc95, 0xda, 0x0, sign_and_exp_bits(1, 0)}};
   s21_decimal d2 = {{0xb1e7c671, 0x3b376, 0x0, sign_and_exp_bits(0, 16)}};
   s21_decimal correct = {
-      {0xfdd2fc8e, 0x675951f9, 0x1d0cc3e1, sign_and_exp_bits(1, 15)}};
+      {0x662eb2db, 0x23ef54ff, 0x2e7ad30, sign_and_exp_bits(1, 14)}};
   s21_decimal result;
 
   ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
@@ -319,7 +319,7 @@ START_TEST(s21_div_26) {
   s21_decimal d1 = {{0xe36ae38f, 0xa9793779, 0x198, sign_and_exp_bits(1, 14)}};
   s21_decimal d2 = {{0x80af1c8, 0x0, 0x0, sign_and_exp_bits(1, 5)}};
   s21_decimal correct = {
-      {0xe75431c4, 0xb87b8fff, 0xb4848857, sign_and_exp_bits(0, 24)}};
+      {0x972204fa, 0x9272c199, 0x120d40d5, sign_and_exp_bits(0, 23)}};
   s21_decimal result;
 
   ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
@@ -394,7 +394,7 @@ START_TEST(s21_div_32) {
   s21_decimal d1 = {{0xe36ae38f, 0xa9793779, 0x198, sign_and_exp_bits(0, 14)}};
   s21_decimal d2 = {{0x80af1c8, 0x0, 0x0, sign_and_exp_bits(0, 5)}};
   s21_decimal correct = {
-      {0xe75431c4, 0xb87b8fff, 0xb4848857, sign_and_exp_bits(0, 24)}};
+      {0x972204fa, 0x9272c199, 0x120d40d5, sign_and_exp_bits(0, 23)}};
   s21_decimal result;
 
   ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);

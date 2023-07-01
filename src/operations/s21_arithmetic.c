@@ -78,6 +78,8 @@ int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
 
   if (res != S21_OK) {
     *result = S21_D_ZERO;
+  } else {
+    truncate_trailing_zeros(result);
   }
 
   return res;
