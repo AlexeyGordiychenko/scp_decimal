@@ -59,18 +59,22 @@ void set_decimal_exp(s21_decimal *d, int exp) {
   d->bits[3] = (d->bits[3] & 0xFF00FFFF) | ((unsigned)exp << S21_EXP_SHIFT);
 }
 
-int decimal_is_zero(s21_decimal d) {
-  return d.bits[0] == 0 && d.bits[1] == 0 && d.bits[2] == 0;
+int decimal_is_zero(s21_decimal d, bool use_all_bits) {
+  return d.bits[0] == 0 && d.bits[1] == 0 && d.bits[2] == 0 &&
+         (use_all_bits ? d.bits[3] == 0 : true);
 }
 
-int mantissa_is_equal(s21_decimal d1, s21_decimal d2) {
+int mantissa_is_equal(s21_decimal d1, s21_decimal d2, bool use_all_bits) {
   return d1.bits[0] == d2.bits[0] && d1.bits[1] == d2.bits[1] &&
-         d1.bits[2] == d2.bits[2];
+         d1.bits[2] == d2.bits[2] &&
+         (use_all_bits ? d1.bits[3] == d2.bits[3] : true);
 }
 
-int mantissa_is_less(s21_decimal d1, s21_decimal d2) {
+int mantissa_is_less(s21_decimal d1, s21_decimal d2, bool use_all_bits) {
   int res = 0;
-  if (d1.bits[2] != d2.bits[2]) {
+  if (use_all_bits && d1.bits[3] != d2.bits[3]) {
+    res = d1.bits[3] < d2.bits[3];
+  } else if (d1.bits[2] != d2.bits[2]) {
     res = d1.bits[2] < d2.bits[2];
   } else if (d1.bits[1] != d2.bits[1]) {
     res = d1.bits[1] < d2.bits[1];
@@ -88,7 +92,7 @@ int increase_exp(s21_decimal *d) {
   int exp = get_decimal_exp(*d);
   if (exp >= S21_MAX_EXP) return res;
 
-  if (multiply_mantissa_by_10(d)) {
+  if (multiply_mantissa_by_10(d, false)) {
     set_decimal_exp(d, ++exp);
     res = exp;
   }
@@ -123,7 +127,7 @@ int divide_by_10(s21_decimal *d, int with_round) {
       tmp_d.bits[0]++;
     }
     // If after dividing/rounding we have 0 in mantissa then set exp to zero too
-    if (decimal_is_zero(tmp_d)) new_exp = 0;
+    if (decimal_is_zero(tmp_d, false)) new_exp = 0;
     *d = tmp_d;
   }
 
@@ -132,15 +136,26 @@ int divide_by_10(s21_decimal *d, int with_round) {
   return new_exp;
 }
 
-int decrease_exp(s21_decimal *d, bool with_round) {
+int decrease_exp(s21_decimal *d, int n, int reminder, bool with_round) {
   // divide bits[0-2] by 10, and decrease exp
   // return the new exp
 
   int exp = get_decimal_exp(*d);
-  if (exp == 0) return exp;
+  if (exp == 0 || n <= 0) return exp;
 
-  divide_mantissa_by_10(d, with_round);
-  set_decimal_exp(d, --exp);
+  int last_reminder = reminder;
+  bool has_reminder = reminder != 0 ? true : false;
+
+  for (int i = 0; i < n && exp > 0; i++, exp--) {
+    last_reminder = divide_mantissa_by_10(d);
+    if (i > 0 && last_reminder && !has_reminder) has_reminder = true;
+  }
+
+  if (with_round) {
+    bank_rounding(d, last_reminder, has_reminder);
+  }
+
+  set_decimal_exp(d, exp);
 
   return exp;
 }
@@ -170,19 +185,15 @@ void decimal_normalization(s21_decimal *d1, s21_decimal *d2) {
   int min_exp = (exp1 > exp2) ? exp2 : exp1;
   if (min_exp > S21_MAX_EXP) min_exp = S21_MAX_EXP;
 
-  while (exp1 > min_exp) {
-    exp1 = decrease_exp(d1, (exp1 == (min_exp + 1) && min_exp != S21_MAX_EXP));
-  }
-  while (exp2 > min_exp) {
-    exp2 = decrease_exp(d2, (exp2 == (min_exp + 1) && min_exp != S21_MAX_EXP));
-  }
+  decrease_exp(d1, exp1 - min_exp, 0, true);
+  decrease_exp(d2, exp2 - min_exp, 0, true);
 }
 
 int decimal_comparison(s21_decimal value_1, s21_decimal value_2, int mode) {
   int res = false;
 
-  int value1_zero = decimal_is_zero(value_1);
-  int value2_zero = decimal_is_zero(value_2);
+  int value1_zero = decimal_is_zero(value_1, false);
+  int value2_zero = decimal_is_zero(value_2, false);
   int value1_sign = get_decimal_sign(value_1);
   int value2_sign = get_decimal_sign(value_2);
 
@@ -199,11 +210,11 @@ int decimal_comparison(s21_decimal value_1, s21_decimal value_2, int mode) {
     int eq = false;
     int less = false;
     if (mode == S21_EQUAL || mode == S21_LESS_OR_EQUAL) {
-      eq = mantissa_is_equal(value_1, value_2);
+      eq = mantissa_is_equal(value_1, value_2, false);
     }
     if (mode == S21_LESS || mode == S21_LESS_OR_EQUAL) {
-      less = (value1_sign) ? mantissa_is_less(value_2, value_1)
-                           : mantissa_is_less(value_1, value_2);
+      less = (value1_sign) ? mantissa_is_less(value_2, value_1, false)
+                           : mantissa_is_less(value_1, value_2, false);
     }
 
     if (mode == S21_EQUAL) {
@@ -237,8 +248,8 @@ int sum_same_sign(s21_decimal value_1, s21_decimal value_2,
   if (carry != 0 && get_decimal_exp(value_1) == 0)
     return S21_HUGE_ERR;
   else if (carry != 0) {
-    decrease_exp(&value_1, 1);
-    decrease_exp(&value_2, 1);
+    decrease_exp(&value_1, 1, 0, true);
+    decrease_exp(&value_2, 1, 0, true);
     result->bits[0] = 0;
     result->bits[1] = 0;
     result->bits[2] = 0;
@@ -355,7 +366,7 @@ int add_mantis(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   return flag;
 }
 
-bool divide_mantissa_by_10(s21_decimal *d, bool with_round) {
+int divide_mantissa_by_10(s21_decimal *d) {
   // Divide the 96-bit integer by 10.
   unsigned long long remainder = 0;
 
@@ -365,23 +376,18 @@ bool divide_mantissa_by_10(s21_decimal *d, bool with_round) {
     remainder = temp % 10;
   }
 
-  // Bank rounding (round half to even)
-  if (with_round && ((remainder > 5 || (remainder == 5 && d->bits[0] & 1)))) {
-    d->bits[0]++;
-  }
-
-  return remainder == 0;
+  return (int)remainder;
 }
 
-bool multiply_mantissa_by_10(s21_decimal *d) {
+bool multiply_mantissa_by_10(s21_decimal *d, bool use_all_bits) {
   // returns true and modifies the decimal if the multiplication is within
   // bounds returns false and don't touch the decimal otherwise
 
   bool res = false;
   s21_decimal tmp_d = *d;
   unsigned long long carry = 0;
-
-  for (int i = 0; i <= 2; i++) {
+  int i_max = use_all_bits ? 3 : 2;
+  for (int i = 0; i <= i_max; i++) {
     unsigned int x = tmp_d.bits[i];
     unsigned long long x_by_8 = (unsigned long long)x << 3;
     unsigned long long x_by_2 = (unsigned long long)x << 1;
@@ -403,23 +409,24 @@ bool multiply_mantissa_by_10(s21_decimal *d) {
   return res;
 }
 
-bool subtract_bits(s21_decimal *minuend, s21_decimal subtrahend) {
+bool subtract_bits(s21_decimal *minuend, s21_decimal subtrahend,
+                   bool use_all_bits) {
+  if (mantissa_is_less(*minuend, subtrahend, use_all_bits)) {
+    return false;
+  }
+
   unsigned long long borrow = 0;
   bool res = true;
   s21_decimal tmp = *minuend;
-
-  for (int i = 0; i < 3; i++) {
+  int i_max = use_all_bits ? 3 : 2;
+  for (int i = 0; i <= i_max; i++) {
     unsigned long long temp =
         (unsigned long long)tmp.bits[i] - subtrahend.bits[i] - borrow;
     tmp.bits[i] = (unsigned int)temp;
     borrow = (temp >> 32) & 1;
   }
 
-  if (borrow) {
-    res = false;
-  } else {
-    *minuend = tmp;
-  }
+  *minuend = tmp;
 
   return res;
 }
@@ -444,12 +451,13 @@ bool add_bits(s21_decimal *accumulator, s21_decimal addend) {
   return res;
 }
 
-bool left_shift_bits(s21_decimal *d) {
+bool left_shift_bits(s21_decimal *d, bool use_all_bits) {
   bool res = true;
   unsigned long long carry = 0;
   s21_decimal tmp = *d;
 
-  for (int i = 0; i < 3; i++) {
+  int i_max = use_all_bits ? 3 : 2;
+  for (int i = 0; i <= i_max; i++) {
     unsigned long long new_carry = tmp.bits[i] >> S21_SIGN_SHIFT;
     tmp.bits[i] <<= 1;
     tmp.bits[i] |= (unsigned int)carry;
@@ -464,9 +472,10 @@ bool left_shift_bits(s21_decimal *d) {
   return res;
 }
 
-void right_shift_bits(s21_decimal *d) {
+void right_shift_bits(s21_decimal *d, bool use_all_bits) {
   unsigned long long carry = 0;
-  for (int i = 2; i >= 0; i--) {
+  int i_max = use_all_bits ? 3 : 2;
+  for (int i = i_max; i >= 0; i--) {
     unsigned long long new_carry = d->bits[i] & 1;
     d->bits[i] >>= 1;
     d->bits[i] |= (unsigned int)(carry << S21_SIGN_SHIFT);
@@ -485,24 +494,23 @@ void div_mantissas(s21_decimal value_1, s21_decimal value_2,
   s21_decimal temp_divisor = value_2;
   s21_decimal temp_remainder = value_1;
   temp_divisor.bits[3] = 0;
-  temp_remainder.bits[3] = 0;
-
   *quotient = S21_D_ZERO;
 
   int shift_count = 0;
-  while (s21_is_less_or_equal(temp_divisor, temp_remainder) && ++shift_count &&
-         left_shift_bits(&temp_divisor)) {
+  while ((mantissa_is_less(temp_divisor, temp_remainder, true) ||
+          mantissa_is_equal(temp_divisor, temp_remainder, true)) &&
+         ++shift_count && left_shift_bits(&temp_divisor, true)) {
   }
 
-  if (s21_is_greater(temp_divisor, temp_remainder)) {
-    right_shift_bits(&temp_divisor);
+  if (!mantissa_is_less(temp_divisor, temp_remainder, true) &&
+      !mantissa_is_equal(temp_divisor, temp_remainder, true)) {
+    right_shift_bits(&temp_divisor, true);
   }
   for (int i = 0; i < shift_count; i++) {
-    if (s21_is_greater_or_equal(temp_remainder, temp_divisor)) {
-      subtract_bits(&temp_remainder, temp_divisor);
+    if (subtract_bits(&temp_remainder, temp_divisor, true)) {
       set_bit96(quotient, shift_count - 1 - i);
     }
-    right_shift_bits(&temp_divisor);
+    right_shift_bits(&temp_divisor, true);
   }
 
   *remainder = temp_remainder;
@@ -598,21 +606,28 @@ void from_float_to_decimal_large(float src, s21_decimal *dst) {
   }
 }
 
-void truncate_trailing_zeros(s21_decimal *d) {
+int truncate_trailing_zeros(s21_decimal *d, int from_exp, int to_exp) {
   // remove the trailing zeros from decimal
   // and decrease exp
 
-  int exp = get_decimal_exp(*d);
-  int exp_new = exp;
+  // int exp = get_decimal_exp(*d);
+  int exp_new = from_exp;
   bool res = true;
-  while (exp_new > 0 && res) {
+  while (exp_new > to_exp && res) {
     s21_decimal tmp = *d;
-    if (divide_mantissa_by_10(&tmp, false)) {
+    if (divide_mantissa_by_10(&tmp) == 0) {
       exp_new--;
       *d = tmp;
     } else {
       res = false;
     }
   }
-  if (exp != exp_new) set_decimal_exp(d, exp_new);
+  if (from_exp != exp_new) set_decimal_exp(d, exp_new);
+  return exp_new;
+}
+
+void bank_rounding(s21_decimal *d, int quotient, bool has_reminder) {
+  if (quotient > 5 || (quotient == 5 && (d->bits[0] & 1 || has_reminder))) {
+    add_bits(d, S21_D_ONE);
+  }
 }
