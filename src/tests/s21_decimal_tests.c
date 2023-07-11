@@ -9,7 +9,8 @@ int main(void) {
   Suite *decimal_tests[] = {
       comparison_tests(), converting_tests(), truncate_tests(),
       add_tests(),        sub_tests(),        div_tests(),
-      floor_tests(),      round_tests(),      NULL};
+      floor_tests(),      round_tests(),      negate_tests(),
+      NULL};
 
   for (int i = 0; decimal_tests[i] != NULL; i++) {
     SRunner *sr = srunner_create(decimal_tests[i]);
