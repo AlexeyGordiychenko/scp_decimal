@@ -59,6 +59,23 @@ START_TEST(s21_floor_4) {
 }
 END_TEST
 
+START_TEST(s21_floor_5) {
+  // -35,8 => -36
+  s21_decimal d1 = {{358, 0, 0, sign_and_exp_bits(1, 1)}};
+  s21_decimal correct = {{36, 0, 0, sign_and_exp_bits(1, 0)}};
+
+  s21_decimal result;
+
+  // print_decimal_bits(d1);
+  // print_decimal_bits(correct);
+  // s21_floor(d1, &result);
+  // print_decimal_bits(result);
+
+  ck_assert_int_eq(s21_floor(d1, &result), S21_OK);
+  ck_assert_int_eq(s21_is_equal(correct, result), S21_EQUAL);
+}
+END_TEST
+
 START_TEST(s21_floor_100) {
   // s21_floor(S21_MIN_DECIMAL_VALUE) = error code 1
   s21_decimal d1 = {{-1, -1, -1, sign_and_exp_bits(1, 0)}};
@@ -89,6 +106,7 @@ Suite *floor_tests(void) {
   tcase_add_test(tc_floor, s21_floor_2);
   tcase_add_test(tc_floor, s21_floor_3);
   tcase_add_test(tc_floor, s21_floor_4);
+  tcase_add_test(tc_floor, s21_floor_5);
 
   // FAILED TESTS
   tcase_add_test(tc_floor, s21_floor_100);

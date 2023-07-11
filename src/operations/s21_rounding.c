@@ -16,12 +16,13 @@ int s21_floor(s21_decimal value, s21_decimal *result) {
 
     if (s21_is_equal(value, decimal_integer_part)) {
       *result = decimal_integer_part;
-    } else if (s21_is_equal(value, zero_decimal)) {
+    } else if (value.bits[0] == 0 && value.bits[1] == 0 && value.bits[2] == 0) {
       *result = zero_decimal;
-    } else if (s21_is_less_or_equal(decimal_integer_part, zero_decimal)) {
+      result->bits[3] = value.bits[3];
+    } else if (s21_is_less(value, zero_decimal)) {
       int sub_flag = s21_sub(decimal_integer_part, one_decimal, result);
       if (sub_flag) error_flag = 1;
-    } else if (s21_is_greater_or_equal(decimal_integer_part, zero_decimal)) {
+    } else if (s21_is_greater_or_equal(value, zero_decimal)) {
       *result = decimal_integer_part;
     }
   }
