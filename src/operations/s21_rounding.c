@@ -26,6 +26,10 @@ int s21_floor(s21_decimal value, s21_decimal *result) {
       *result = decimal_integer_part;
     }
   }
+  if (s21_is_equal(value, s21_min_decimal_value)) {
+    *result = s21_min_decimal_value;
+    error_flag = 0;
+  }
   return error_flag;
 }
 

@@ -46,14 +46,7 @@ START_TEST(s21_floor_4) {
   s21_decimal correct = {{-1 & 0b10011001100110011001100110011001,
                           -1 & 0b10011001100110011001100110011001,
                           -1 & 0b00011001100110011001100110011001, 0}};
-
   s21_decimal result;
-
-  // print_decimal_bits(d1);
-  // print_decimal_bits(correct);
-  // s21_floor(d1, &result);
-  // print_decimal_bits(result);
-
   ck_assert_int_eq(s21_floor(d1, &result), S21_OK);
   ck_assert_int_eq(s21_is_equal(correct, result), S21_EQUAL);
 }
@@ -63,6 +56,26 @@ START_TEST(s21_floor_5) {
   // -35,8 => -36
   s21_decimal d1 = {{358, 0, 0, sign_and_exp_bits(1, 1)}};
   s21_decimal correct = {{36, 0, 0, sign_and_exp_bits(1, 0)}};
+  s21_decimal result;
+  ck_assert_int_eq(s21_floor(d1, &result), S21_OK);
+  ck_assert_int_eq(s21_is_equal(correct, result), S21_EQUAL);
+}
+END_TEST
+
+START_TEST(s21_floor_6) {
+  // -99,9999999 => -100
+  s21_decimal d1 = {{999999999, 0, 0, sign_and_exp_bits(1, 7)}};
+  s21_decimal correct = {{100, 0, 0, sign_and_exp_bits(1, 0)}};
+  s21_decimal result;
+  ck_assert_int_eq(s21_floor(d1, &result), S21_OK);
+  ck_assert_int_eq(s21_is_equal(correct, result), S21_EQUAL);
+}
+END_TEST
+
+START_TEST(s21_floor_7) {
+  // 99,9999999 => 99
+  s21_decimal d1 = {{999999999, 0, 0, sign_and_exp_bits(0, 7)}};
+  s21_decimal correct = {{99, 0, 0, sign_and_exp_bits(0, 0)}};
 
   s21_decimal result;
 
@@ -76,24 +89,39 @@ START_TEST(s21_floor_5) {
 }
 END_TEST
 
-START_TEST(s21_floor_100) {
-  // s21_floor(S21_MIN_DECIMAL_VALUE) = error code 1
-  s21_decimal d1 = {{-1, -1, -1, sign_and_exp_bits(1, 0)}};
-  // s21_decimal correct = {{0, 0, 0, 0}};
-  // s21_decimal one = {{1, 0, 0, 0}};
+START_TEST(s21_floor_8) {
+  // -0,0 => 0
+  s21_decimal d1 = {{0, 0, 0, sign_and_exp_bits(1, 0)}};
+  s21_decimal correct = {{0, 0, 0, sign_and_exp_bits(0, 0)}};
+  s21_decimal result;
+  ck_assert_int_eq(s21_floor(d1, &result), S21_OK);
+  ck_assert_int_eq(s21_is_equal(correct, result), S21_EQUAL);
+}
+END_TEST
 
+START_TEST(s21_floor_9) {
+  // 0,0 => 0
+  s21_decimal d1 = {{0, 0, 0, sign_and_exp_bits(0, 0)}};
+  s21_decimal correct = {{0, 0, 0, sign_and_exp_bits(0, 0)}};
+  s21_decimal result;
+  ck_assert_int_eq(s21_floor(d1, &result), S21_OK);
+  ck_assert_int_eq(s21_is_equal(correct, result), S21_EQUAL);
+}
+END_TEST
+
+START_TEST(s21_floor_10) {
+  // -MAX_DECIMAL => -MAX_DECIMAL
+  s21_decimal d1 = {{-1, -1, -1, sign_and_exp_bits(1, 0)}};
+  s21_decimal correct = {{-1, -1, -1, sign_and_exp_bits(1, 0)}};
   s21_decimal result;
 
   // print_decimal_bits(d1);
-  // s21_truncate(d1, &result);
+  // print_decimal_bits(correct);
+  // s21_floor(d1, &result);
   // print_decimal_bits(result);
 
-  // printf("\nerror code sub(MAX_DECIMAL - 1) : %d\n", s21_sub(d1, one,
-  // &result)); printf("\nerror code -MAX_DECIMAL - 1 : %d\n", s21_floor(d1,
-  // &result)); print_decimal_bits(result);
-
-  ck_assert_int_eq(s21_floor(d1, &result), 1);
-  // ck_assert_int_eq(s21_is_equal(correct, result), S21_EQUAL);
+  ck_assert_int_eq(s21_floor(d1, &result), S21_OK);
+  ck_assert_int_eq(s21_is_equal(correct, result), S21_EQUAL);
 }
 END_TEST
 
@@ -107,9 +135,11 @@ Suite *floor_tests(void) {
   tcase_add_test(tc_floor, s21_floor_3);
   tcase_add_test(tc_floor, s21_floor_4);
   tcase_add_test(tc_floor, s21_floor_5);
-
-  // FAILED TESTS
-  tcase_add_test(tc_floor, s21_floor_100);
+  tcase_add_test(tc_floor, s21_floor_6);
+  tcase_add_test(tc_floor, s21_floor_7);
+  tcase_add_test(tc_floor, s21_floor_8);
+  tcase_add_test(tc_floor, s21_floor_9);
+  tcase_add_test(tc_floor, s21_floor_10);
 
   return s_floor;
 }
