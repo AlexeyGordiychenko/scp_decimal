@@ -1,5 +1,7 @@
 #include "s21_common.h"
 
+#include <stdint.h>
+
 int check_bit(unsigned int numb, int pos) {
   int a = 1u << pos;
   return (numb & a) > 0 ? 1 : 0;
@@ -47,8 +49,16 @@ int get_decimal_sign(s21_decimal d) {
   return (d.bits[3] >> S21_SIGN_SHIFT) & 0x1;
 }
 
+int get_decimal_sign_big(s21_big_decimal d) {
+  return (d.bits[6] >> S21_SIGN_SHIFT) & 0x1;
+}
+
 int get_decimal_exp(s21_decimal d) {
   return (d.bits[3] >> S21_EXP_SHIFT) & 0xFF;
+}
+
+int get_decimal_exp_big(s21_big_decimal d) {
+  return (d.bits[6] >> S21_EXP_SHIFT) & 0xFF;
 }
 
 void set_decimal_sign(s21_decimal *d, int sign) {
@@ -57,6 +67,10 @@ void set_decimal_sign(s21_decimal *d, int sign) {
 
 void set_decimal_exp(s21_decimal *d, int exp) {
   d->bits[3] = (d->bits[3] & 0xFF00FFFF) | ((unsigned)exp << S21_EXP_SHIFT);
+}
+
+void set_decimal_exp_big(s21_big_decimal *d, int exp) {
+  d->bits[6] = (d->bits[6] & 0xFF00FFFF) | ((unsigned)exp << S21_EXP_SHIFT);
 }
 
 int decimal_is_zero(s21_decimal d, bool use_all_bits) {
@@ -160,6 +174,19 @@ int decrease_exp(s21_decimal *d, int n, int reminder, bool with_round) {
   return exp;
 }
 
+int decrease_exp_big(s21_big_decimal *d, bool with_round) {
+  // divide bits[0-2] by 10, and decrease exp
+  // return the new exp
+
+  int exp = get_decimal_exp_big(*d);
+  if (exp == 0) return exp;
+
+  divide_mantissa_by_10_big(d, with_round);
+  set_decimal_exp_big(d, --exp);
+
+  return exp;
+}
+
 void decimal_normalization(s21_decimal *d1, s21_decimal *d2) {
   int exp1 = get_decimal_exp(*d1);
   int exp2 = get_decimal_exp(*d2);
@@ -256,6 +283,27 @@ int sum_same_sign(s21_decimal value_1, s21_decimal value_2,
     result->bits[3] = 0;
     sum_same_sign(value_1, value_2, result);
   }
+  return S21_OK;
+}
+
+int sum_same_sign_big(s21_big_decimal value_1, s21_big_decimal value_2,
+                      s21_big_decimal *result) {
+  int carry = 0;
+  for (int i = 0; i < 192; i++) {
+    int sum = get_bit192(&value_1, i) + get_bit192(&value_2, i) + carry;
+    carry = 0;
+    if (sum == 1) set_bit192(result, i);
+    if (sum == 2) {
+      carry = 1;
+      set_zero_bit192(result, i);
+    }
+    if (sum == 3) {
+      carry = 1;
+      set_bit192(result, i);
+    }
+  }
+  if (carry != 0 && get_decimal_exp_big(value_1) == 0) return S21_HUGE_ERR;
+
   return S21_OK;
 }
 
@@ -379,6 +427,25 @@ int divide_mantissa_by_10(s21_decimal *d) {
   return (int)remainder;
 }
 
+void divide_mantissa_by_10_big(s21_big_decimal *d, bool with_round) {
+  // Divide the 96-bit integer by 10.
+
+  unsigned long long remainder = 0;
+
+  for (int i = 5; i >= 0; --i) {
+    unsigned int bit = d->bits[i] & S21_MAX4BITS;
+    unsigned long long temp = (remainder << 32) | bit;
+    bit = (unsigned int)(temp / 10);
+    remainder = temp % 10;
+    d->bits[i] = bit & S21_MAX4BITS;
+  }
+
+  // Bank rounding (round half to even)
+  if (with_round && ((remainder > 5 || (remainder == 5 && d->bits[0] & 1)))) {
+    d->bits[0]++;
+  }
+}
+
 bool multiply_mantissa_by_10(s21_decimal *d, bool use_all_bits) {
   // returns true and modifies the decimal if the multiplication is within
   // bounds returns false and don't touch the decimal otherwise
@@ -472,6 +539,26 @@ bool left_shift_bits(s21_decimal *d, bool use_all_bits) {
   return res;
 }
 
+bool left_shift_bits_big(s21_big_decimal *d) {
+  bool res = true;
+  unsigned long long carry = 0;
+  s21_big_decimal tmp = *d;
+
+  for (int i = 0; i < 6; i++) {
+    unsigned long long new_carry = tmp.bits[i] >> S21_SIGN_SHIFT;
+    tmp.bits[i] <<= 1;
+    tmp.bits[i] |= (unsigned int)carry;
+    carry = new_carry;
+  }
+
+  if (carry) {
+    res = false;
+  } else {
+    *d = tmp;
+  }
+  return res;
+}
+
 void right_shift_bits(s21_decimal *d, bool use_all_bits) {
   unsigned long long carry = 0;
   int i_max = use_all_bits ? 3 : 2;
@@ -487,6 +574,24 @@ void set_bit96(s21_decimal *d, int bit_position) {
   int index = bit_position / 32;
   int bit_offset = bit_position % 32;
   d->bits[index] |= (1 << bit_offset);
+}
+
+void set_bit192(s21_big_decimal *d, int bit_position) {
+  int index = bit_position / 32;
+  int bit_offset = bit_position % 32;
+  d->bits[index] |= (1 << bit_offset);
+}
+
+void set_zero_bit192(s21_big_decimal *d, int bit_position) {
+  int index = bit_position / 32;
+  int bit_offset = bit_position % 32;
+  d->bits[index] &= ~(1 << bit_offset);
+}
+
+int get_bit192(s21_big_decimal *d, int bit_position) {
+  int index = bit_position / 32;
+  int bit_offset = bit_position % 32;
+  return check_bit(d->bits[index], bit_offset);
 }
 
 void div_mantissas(s21_decimal value_1, s21_decimal value_2,
