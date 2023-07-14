@@ -124,8 +124,8 @@
 // END_TEST
 
 // Suite *negate_tests(void) {
-//   Suite *s_negate = suite_create(PRE_TEST_HEADER "S21_NEGATE" POST_TEST_HEADER);
-//   TCase *tc_negate = tcase_create("negate_tc");
+//   Suite *s_negate = suite_create(PRE_TEST_HEADER "S21_NEGATE"
+//   POST_TEST_HEADER); TCase *tc_negate = tcase_create("negate_tc");
 
 //   suite_add_tcase(s_negate, tc_negate);
 //   tcase_add_test(tc_negate, s21_negate_1);
