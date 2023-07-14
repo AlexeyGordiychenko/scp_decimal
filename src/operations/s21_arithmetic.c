@@ -58,7 +58,7 @@ int s21_mul(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
     }
 
     if (mul_res.bits[3] != 0 || mul_res.bits[4] != 0 || mul_res.bits[5] != 0) {
-      if (!get_decimal_sign_big(mul_res))
+      if (!res_sign)
         flag = S21_HUGE_ERR;
       else
         flag = S21_SMALL_ERR;
@@ -69,12 +69,22 @@ int s21_mul(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
     decrease_exp_big(&mul_res, 1);
   }
 
+  if(mul_res.bits[0] == 0 && mul_res.bits[1] == 0 && mul_res.bits[2] == 0) {
+    mul_res.bits[6] = res_sign << 31;
+  }
+  
   if (flag == S21_OK) {
     result->bits[0] = mul_res.bits[0] & S21_MAX4BITS;
     result->bits[1] = mul_res.bits[1] & S21_MAX4BITS;
     result->bits[2] = mul_res.bits[2] & S21_MAX4BITS;
     result->bits[3] = mul_res.bits[6] & S21_MAX4BITS;
+  } else {
+    result->bits[0] = 0;
+    result->bits[1] = 0;
+    result->bits[2] = 0;
+    result->bits[3] = 0;
   }
+
   return flag;
 }
 
