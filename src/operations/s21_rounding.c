@@ -9,7 +9,10 @@ int s21_floor(s21_decimal value, s21_decimal *result) {
   s21_decimal one_decimal = {{1, 0, 0, 0}};
   int error_flag = 1;
 
-  if (s21_is_not_equal(value, s21_min_decimal_value)) {
+  if (s21_is_equal(value, s21_min_decimal_value)) {
+    error_flag = 0;
+    *result = value;
+  } else {
     error_flag = 0;
     s21_decimal decimal_integer_part = zero_decimal;
     s21_truncate(value, &decimal_integer_part);
