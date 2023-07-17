@@ -81,4 +81,6 @@ void bank_rounding_big(s21_big_decimal* d, int quotient, bool has_reminder);
 void from_big_to_decimal_with_rounding(s21_big_decimal* mul_res);
 s21_big_decimal bits_mult(s21_big_decimal* value_1_big,
                           s21_big_decimal* value_2_big, int* flag);
+int get_div_result(s21_decimal value_1, s21_decimal value_2,
+                   s21_decimal* result, int result_sign, int exp1, int exp2);
 #endif

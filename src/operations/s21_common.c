@@ -848,3 +848,57 @@ s21_big_decimal bits_mult(s21_big_decimal *value_1_big,
   }
   return mul_res;
 }
+
+int get_div_result(s21_decimal value_1, s21_decimal value_2,
+                   s21_decimal *result, int result_sign, int exp1, int exp2) {
+  int res = S21_OK;
+  int exp = exp1 - exp2;
+  int max_exp = (exp1 > exp2) ? exp1 : exp2;
+
+  s21_decimal quotient = S21_D_ZERO;
+  s21_decimal remainder = value_1;
+  remainder.bits[3] = 0;  // we will use all 4 bits
+  int tmp_quotient_int = 0;
+  bool has_reminder = false;
+
+  // Perform the division operation on the 96-bit integer numbers
+  if (mantissa_is_equal(value_1, value_2, false)) {
+    quotient = S21_D_ONE;
+  } else {
+    div_mantissas(remainder, value_2, &quotient, &remainder);
+    while (!decimal_is_zero(remainder, true) && exp <= (S21_MAX_EXP + 1) &&
+           multiply_mantissa_by_10(&remainder, true)) {
+      s21_decimal tmp_quotient;
+      div_mantissas(remainder, value_2, &tmp_quotient, &remainder);
+      if (multiply_mantissa_by_10(&quotient, false) &&
+          add_bits(&quotient, tmp_quotient)) {
+        exp++;
+      } else {
+        max_exp = 0;
+        tmp_quotient_int = tmp_quotient.bits[0];
+        has_reminder = !decimal_is_zero(remainder, true);
+        remainder = S21_D_ZERO;
+      }
+    }
+  }
+
+  // Store the result and ajust the final value (exp, rounding, trailing zeros)
+  *result = quotient;
+  if (exp < 0) {
+    for (; exp && multiply_mantissa_by_10(result, false); exp++) {
+    }
+  }
+  if (exp < 0) {
+    res = result_sign ? S21_SMALL_ERR : S21_HUGE_ERR;
+  } else {
+    set_decimal_exp(result, exp);
+    set_decimal_sign(result, result_sign);
+    if (exp > S21_MAX_EXP) {
+      exp = decrease_exp(result, exp - S21_MAX_EXP, tmp_quotient_int, true);
+    } else {
+      bank_rounding(result, tmp_quotient_int, has_reminder);
+    }
+    truncate_trailing_zeros(result, exp, max_exp);
+  }
+  return res;
+}
