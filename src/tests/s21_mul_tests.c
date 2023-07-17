@@ -1623,8 +1623,6 @@ START_TEST(s21_mul_125) {
       {0xf8680000, 0x3a7ed5fc, 0xd8f65390, sign_and_exp_bits(0, 27)}};
   s21_decimal result;
 
-  int a = s21_mul(d1, d2, &result);
-  a = a;
   ck_assert_int_eq(s21_mul(d1, d2, &result), S21_OK);
   ASSERT_BITS_EQ
 }
