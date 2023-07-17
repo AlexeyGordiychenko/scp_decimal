@@ -7,34 +7,6 @@ int check_bit(unsigned int numb, int pos) {
   return (numb & a) > 0 ? 1 : 0;
 }
 
-void print_binary(unsigned int num) {
-  if (num > 1) {
-    print_binary(num >> 1);
-  }
-  printf("%u", num % 2);
-}
-
-void print_full_binary(unsigned int num) {
-  for (unsigned int i = 1u << S21_SIGN_SHIFT; i > 0; i = i >> 1) {
-    if ((num & i) != 0)
-      printf("1");
-    else
-      printf("0");
-  }
-}
-
-void print_decimal_bits(s21_decimal obj) {
-  printf("data : [");
-  print_full_binary(obj.bits[3]);
-  printf("] num : [");
-  print_full_binary(obj.bits[2]);
-  printf("] [");
-  print_full_binary(obj.bits[1]);
-  printf("] [");
-  print_full_binary(obj.bits[0]);
-  printf("]\n");
-}
-
 unsigned int set_bit(unsigned int numb, int pos) {
   int bit = check_bit(numb, pos);
   if (bit == 0) {
