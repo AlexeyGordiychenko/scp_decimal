@@ -1356,6 +1356,26 @@ START_TEST(s21_floor_106) {
 }
 END_TEST
 
+START_TEST(s21_floor_107) {
+  // -0,0 / 10^5 => 0 / 10^0
+  s21_decimal d1 = {{0, 0, 0, sign_and_exp_bits(1, 5)}};
+  s21_decimal correct = {{0, 0, 0, sign_and_exp_bits(0, 0)}};
+  s21_decimal result;
+  ck_assert_int_eq(s21_floor(d1, &result), S21_OK);
+  ck_assert_int_eq(s21_is_equal(correct, result), S21_EQUAL);
+}
+END_TEST
+
+START_TEST(s21_floor_108) {
+  // 0,0 / 10^5  => 0 / 10^0
+  s21_decimal d1 = {{0, 0, 0, sign_and_exp_bits(0, 0)}};
+  s21_decimal correct = {{0, 0, 0, sign_and_exp_bits(0, 0)}};
+  s21_decimal result;
+  ck_assert_int_eq(s21_floor(d1, &result), S21_OK);
+  ck_assert_int_eq(s21_is_equal(correct, result), S21_EQUAL);
+}
+END_TEST
+
 Suite *floor_tests(void) {
   Suite *s1 = suite_create(PRE_TEST_HEADER "S21_FLOOR" POST_TEST_HEADER);
   TCase *tc1_1 = tcase_create("S21_FLOOR");
@@ -1468,6 +1488,8 @@ Suite *floor_tests(void) {
   tcase_add_test(tc1_1, s21_floor_104);
   tcase_add_test(tc1_1, s21_floor_105);
   tcase_add_test(tc1_1, s21_floor_106);
+  tcase_add_test(tc1_1, s21_floor_107);
+  tcase_add_test(tc1_1, s21_floor_108);
 
   return s1;
 }
