@@ -174,15 +174,23 @@ int decrease_exp(s21_decimal *d, int n, int reminder, bool with_round) {
   return exp;
 }
 
-int decrease_exp_big(s21_big_decimal *d, bool with_round) {
-  // divide bits[0-2] by 10, and decrease exp
-  // return the new exp
-
+int decrease_exp_big(s21_big_decimal *d, int n, int reminder, bool with_round) {
   int exp = get_decimal_exp_big(*d);
-  if (exp == 0) return exp;
+  if (exp == 0 || n <= 0) return exp;
 
-  divide_mantissa_by_10_big(d, with_round);
-  set_decimal_exp_big(d, --exp);
+  int last_reminder = reminder;
+  bool has_reminder = reminder != 0 ? true : false;
+
+  for (int i = 0; i < n && exp > 0; i++, exp--) {
+    last_reminder = divide_mantissa_by_10_big(d);
+    if (i > 0 && last_reminder && !has_reminder) has_reminder = true;
+  }
+
+  if (with_round) {
+    bank_rounding_big(d, last_reminder, has_reminder);
+  }
+
+  set_decimal_exp_big(d, exp);
 
   return exp;
 }
@@ -290,7 +298,7 @@ int sum_same_sign_big(s21_big_decimal value_1, s21_big_decimal value_2,
                       s21_big_decimal *result) {
   int carry = 0;
   for (int i = 0; i < 192; i++) {
-    int sum = get_bit192(&value_1, i) + get_bit192(&value_2, i) + carry;
+    int sum = get_bit192(value_1, i) + get_bit192(value_2, i) + carry;
     carry = 0;
     if (sum == 1) set_bit192(result, i);
     if (sum == 2) {
@@ -345,7 +353,6 @@ void set_same_exp(s21_decimal value, s21_decimal *result) {
   }
   if (temp == 1) result->bits[3] = set_bit(result->bits[3], 31);
 }
-
 int sub_mantis(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   result->bits[0] = 0;
   result->bits[1] = 0;
@@ -361,6 +368,7 @@ int sub_mantis(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
                                 second_val)) {  // |v1|>|v2| (+v1) - (+v2)
       sub_pos(first_val, second_val, result);
     } else {  // |v2|>|v1| (+v1) - (+v2)
+
       sub_pos(second_val, first_val, result);
       result->bits[3] = set_bit(result->bits[3], 31);
     }
@@ -373,6 +381,7 @@ int sub_mantis(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
       sub_pos(first_val, second_val, result);
       result->bits[3] = set_bit(result->bits[3], 31);
     } else {  // |v2|>|v1| (-v1) - (-v2)
+
       sub_pos(second_val, first_val, result);
     }
   }
@@ -408,8 +417,18 @@ int add_mantis(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
     result->bits[3] = set_bit(result->bits[3], 31);
   }
   if ((check_bit(value_1.bits[3], 31) == 0 &&
-       check_bit(value_2.bits[3], 31) == 1)) {  // (-v1) + (+v2) и (v1) + (-v2)
+       check_bit(value_2.bits[3], 31) == 1)) {  // (v1) + (-v2)
+    value_2.bits[3] = set_bit(value_2.bits[3], 31);
     flag = s21_sub(value_1, value_2, result);
+  }
+  if ((check_bit(value_1.bits[3], 31) == 1 &&
+       check_bit(value_2.bits[3], 31) == 0)) {  // (-v1) + (+v2)
+    value_1.bits[3] = set_bit(value_1.bits[3], 31);
+    flag = s21_sub(value_2, value_1, result);
+    if (decimal_is_zero(*result, false) &&
+        check_bit(result->bits[3], 31) == 0) {
+      result->bits[3] = set_bit(result->bits[3], 31);
+    }
   }
   return flag;
 }
@@ -427,9 +446,7 @@ int divide_mantissa_by_10(s21_decimal *d) {
   return (int)remainder;
 }
 
-void divide_mantissa_by_10_big(s21_big_decimal *d, bool with_round) {
-  // Divide the 96-bit integer by 10.
-
+int divide_mantissa_by_10_big(s21_big_decimal *d) {
   unsigned long long remainder = 0;
 
   for (int i = 5; i >= 0; --i) {
@@ -440,10 +457,7 @@ void divide_mantissa_by_10_big(s21_big_decimal *d, bool with_round) {
     d->bits[i] = bit & S21_MAX4BITS;
   }
 
-  // Bank rounding (round half to even)
-  if (with_round && ((remainder > 5 || (remainder == 5 && d->bits[0] & 1)))) {
-    d->bits[0]++;
-  }
+  return (int)remainder;
 }
 
 bool multiply_mantissa_by_10(s21_decimal *d, bool use_all_bits) {
@@ -504,6 +518,26 @@ bool add_bits(s21_decimal *accumulator, s21_decimal addend) {
   s21_decimal tmp = *accumulator;
 
   for (int i = 0; i < 3; i++) {
+    unsigned long long sum;
+    sum = carry + tmp.bits[i] + addend.bits[i];
+    tmp.bits[i] = (unsigned int)(sum & 0xFFFFFFFF);
+    carry = (sum >> 32);
+  }
+
+  if (carry) {
+    res = false;
+  } else {
+    *accumulator = tmp;
+  }
+  return res;
+}
+
+bool add_bits_big(s21_big_decimal *accumulator, s21_big_decimal addend) {
+  unsigned long long carry = 0;
+  bool res = true;
+  s21_big_decimal tmp = *accumulator;
+
+  for (int i = 0; i < 6; i++) {
     unsigned long long sum;
     sum = carry + tmp.bits[i] + addend.bits[i];
     tmp.bits[i] = (unsigned int)(sum & 0xFFFFFFFF);
@@ -588,10 +622,10 @@ void set_zero_bit192(s21_big_decimal *d, int bit_position) {
   d->bits[index] &= ~(1 << bit_offset);
 }
 
-int get_bit192(s21_big_decimal *d, int bit_position) {
+int get_bit192(s21_big_decimal d, int bit_position) {
   int index = bit_position / 32;
   int bit_offset = bit_position % 32;
-  return check_bit(d->bits[index], bit_offset);
+  return check_bit(d.bits[index], bit_offset);
 }
 
 void div_mantissas(s21_decimal value_1, s21_decimal value_2,
@@ -735,4 +769,82 @@ void bank_rounding(s21_decimal *d, int quotient, bool has_reminder) {
   if (quotient > 5 || (quotient == 5 && (d->bits[0] & 1 || has_reminder))) {
     add_bits(d, S21_D_ONE);
   }
+}
+
+void bank_rounding_big(s21_big_decimal *d, int quotient, bool has_reminder) {
+  if (quotient > 5 || (quotient == 5 && (d->bits[0] & 1 || has_reminder))) {
+    add_bits_big(d, S21_D_ONE_BIG);
+  }
+}
+
+void from_big_to_decimal_with_rounding(s21_big_decimal *mul_res) {
+  if (((mul_res->bits[3] != 0 || mul_res->bits[4] != 0 ||
+        mul_res->bits[5] != 0) &&
+       get_decimal_exp_big(*mul_res) > 0) ||
+      get_decimal_exp_big(*mul_res) > 28) {
+    s21_big_decimal temp = *mul_res;
+    int reminder = 0;
+    int n = 0;
+    int flag = 0;
+    if (get_decimal_exp_big(*mul_res) > 28) {
+      n = get_decimal_exp_big(*mul_res) - 28;
+      decrease_exp_big(&temp, get_decimal_exp_big(*mul_res) - 28, reminder, 1);
+      reminder = 0;
+
+      if ((temp.bits[3] != 0 || temp.bits[4] != 0 || temp.bits[5] != 0) &&
+          get_decimal_exp_big(temp) > 0) {
+        s21_big_decimal temp1 = *mul_res;
+        decrease_exp_big(&temp1, get_decimal_exp_big(*mul_res) + 1 - 28,
+                         reminder, 0);
+        while (
+            ((temp1.bits[3] != 0 || temp1.bits[4] != 0 || temp1.bits[5] != 0) &&
+             get_decimal_exp_big(temp1) > 0)) {
+          decrease_exp_big(&temp1, 1, reminder, 0);
+          n += 1;
+        }
+        n += 1;
+      }
+      flag = 1;
+    }
+    if ((temp.bits[3] != 0 || temp.bits[4] != 0 || temp.bits[5] != 0) &&
+        get_decimal_exp_big(temp) > 0 && flag == 0) {
+      if ((temp.bits[3] != 0 || temp.bits[4] != 0 || temp.bits[5] != 0) &&
+          get_decimal_exp_big(temp) > 0) {
+        s21_big_decimal temp1 = *mul_res;
+        decrease_exp_big(&temp, get_decimal_exp_big(*mul_res) - 28, reminder,
+                         0);
+        while (
+            ((temp1.bits[3] != 0 || temp1.bits[4] != 0 || temp1.bits[5] != 0) &&
+             get_decimal_exp_big(temp1) > 0)) {
+          decrease_exp_big(&temp1, 1, reminder, 0);
+          n += 1;
+        }
+      }
+    }
+    decrease_exp_big(&*mul_res, n, 0, 1);
+  }
+}
+
+s21_big_decimal bits_mult(s21_big_decimal *value_1_big,
+                          s21_big_decimal *value_2_big, int *flag) {
+  s21_big_decimal mul_res_tmp = {{0, 0, 0, 0, 0, 0, 0}};
+  s21_big_decimal mul_res = {{0, 0, 0, 0, 0, 0, 0}};
+  int i = 0;
+  while ((value_1_big->bits[0] != 0 || value_1_big->bits[1] != 0 ||
+          value_1_big->bits[2] != 0 || value_1_big->bits[3] != 0 ||
+          value_1_big->bits[4] != 0 || value_1_big->bits[5] != 0) &&
+         i < 192) {
+    if (get_bit192((*value_1_big), i) != 0) {
+      mul_res_tmp = mul_res;
+      int err_code = sum_same_sign_big(mul_res_tmp, *value_2_big, &mul_res);
+      if (err_code == S21_HUGE_ERR) {
+        *flag = S21_HUGE_ERR;
+        i = 192;
+      }
+      set_zero_bit192(&(*value_1_big), i);
+    }
+    left_shift_bits_big(&(*value_2_big));
+    i++;
+  }
+  return mul_res;
 }
