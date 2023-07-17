@@ -114,42 +114,6 @@ int increase_exp(s21_decimal *d) {
   return res;
 }
 
-int divide_by_10(s21_decimal *d, int with_round) {
-  // divide bits[0-2] by 10, and decrease exp
-  // return the new exp
-  int exp = get_decimal_exp(*d);
-  int new_exp = exp;
-  s21_decimal tmp_d = *d;
-
-  // Divide the 96-bit integer by 10.
-  unsigned long long remainder = 0;
-
-  for (int i = 2; i >= 0; --i) {
-    unsigned long long temp = (remainder << 32) | tmp_d.bits[i];
-    tmp_d.bits[i] = (unsigned int)(temp / 10);
-    remainder = temp % 10;
-  }
-
-  if (remainder != 0 && exp < S21_MAX_EXP) {
-    // can't change mantissa but can increase exp
-    new_exp++;
-  } else {
-    if (exp > S21_MAX_EXP) new_exp--;
-    // Bank rounding (round half to even)
-    if (with_round &&
-        ((remainder > 5 || (remainder == 5 && tmp_d.bits[0] & 1)))) {
-      tmp_d.bits[0]++;
-    }
-    // If after dividing/rounding we have 0 in mantissa then set exp to zero too
-    if (decimal_is_zero(tmp_d, false)) new_exp = 0;
-    *d = tmp_d;
-  }
-
-  if (exp != new_exp) set_decimal_exp(d, new_exp);
-
-  return new_exp;
-}
-
 int decrease_exp(s21_decimal *d, int n, int reminder, bool with_round) {
   // divide bits[0-2] by 10, and decrease exp
   // return the new exp
