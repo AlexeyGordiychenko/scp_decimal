@@ -41,7 +41,7 @@ int decimal_is_zero(s21_decimal d, bool use_all_bits);
 int mantissa_is_equal(s21_decimal d1, s21_decimal d2, bool use_all_bits);
 int mantissa_is_less(s21_decimal d1, s21_decimal d2, bool use_all_bits);
 int increase_exp(s21_decimal* d);
-int decrease_exp(s21_decimal* d, int n, int reminder, bool with_round);
+int decrease_exp(s21_decimal* d, int n, bool has_reminder, bool with_round);
 int decrease_exp_big(s21_big_decimal* d, int n, int reminder, bool with_round);
 void decimal_normalization(s21_decimal* d1, s21_decimal* d2);
 int decimal_comparison(s21_decimal value_1, s21_decimal value_2, int mode);

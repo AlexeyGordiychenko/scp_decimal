@@ -83,7 +83,7 @@ int s21_round(s21_decimal value, s21_decimal *result) {
 
 int s21_truncate(s21_decimal value, s21_decimal *result) {
   int exp = get_decimal_exp(value);
-  decrease_exp(&value, exp, 0, false);
+  decrease_exp(&value, exp, false, false);
   *result = value;
 
   return S21_OK;

@@ -86,19 +86,18 @@ int increase_exp(s21_decimal *d) {
   return res;
 }
 
-int decrease_exp(s21_decimal *d, int n, int reminder, bool with_round) {
+int decrease_exp(s21_decimal *d, int n, bool has_reminder, bool with_round) {
   // divide bits[0-2] by 10, and decrease exp
   // return the new exp
 
   int exp = get_decimal_exp(*d);
   if (exp == 0 || n <= 0) return exp;
 
-  int last_reminder = reminder;
-  bool has_reminder = reminder != 0 ? true : false;
+  int last_reminder = 0;
 
-  for (int i = 0; i < n && exp > 0; i++, exp--) {
+  for (int i = 1; i <= n && exp > 0; i++, exp--) {
     last_reminder = divide_mantissa_by_10(d);
-    if (i > 0 && last_reminder && !has_reminder) has_reminder = true;
+    if (!has_reminder && i != n && last_reminder) has_reminder = true;
   }
 
   if (with_round) {
@@ -156,8 +155,8 @@ void decimal_normalization(s21_decimal *d1, s21_decimal *d2) {
   int min_exp = (exp1 > exp2) ? exp2 : exp1;
   if (min_exp > S21_MAX_EXP) min_exp = S21_MAX_EXP;
 
-  decrease_exp(d1, exp1 - min_exp, 0, true);
-  decrease_exp(d2, exp2 - min_exp, 0, true);
+  decrease_exp(d1, exp1 - min_exp, false, true);
+  decrease_exp(d2, exp2 - min_exp, false, true);
 }
 
 int decimal_comparison(s21_decimal value_1, s21_decimal value_2, int mode) {
@@ -219,8 +218,8 @@ int sum_same_sign(s21_decimal value_1, s21_decimal value_2,
   if (carry != 0 && get_decimal_exp(value_1) == 0)
     return S21_HUGE_ERR;
   else if (carry != 0) {
-    decrease_exp(&value_1, 1, 0, true);
-    decrease_exp(&value_2, 1, 0, true);
+    decrease_exp(&value_1, 1, false, true);
+    decrease_exp(&value_2, 1, false, true);
     result->bits[0] = 0;
     result->bits[1] = 0;
     result->bits[2] = 0;
@@ -795,7 +794,6 @@ int get_div_result(s21_decimal value_1, s21_decimal value_2,
   s21_decimal remainder = value_1;
   remainder.bits[3] = 0;  // we will use all 4 bits
   int tmp_quotient_int = 0;
-  bool has_reminder = false;
 
   // Perform the division operation on the 96-bit integer numbers
   if (mantissa_is_equal(value_1, value_2, false)) {
@@ -812,11 +810,12 @@ int get_div_result(s21_decimal value_1, s21_decimal value_2,
       } else {
         max_exp = 0;
         tmp_quotient_int = tmp_quotient.bits[0];
-        has_reminder = !decimal_is_zero(remainder, true);
-        remainder = S21_D_ZERO;
+        break;
       }
     }
   }
+
+  bool has_reminder = !decimal_is_zero(remainder, true);
 
   // Store the result and ajust the final value (exp, rounding, trailing zeros)
   *result = quotient;
@@ -830,7 +829,7 @@ int get_div_result(s21_decimal value_1, s21_decimal value_2,
     set_decimal_exp(result, exp);
     set_decimal_sign(result, result_sign);
     if (exp > S21_MAX_EXP) {
-      exp = decrease_exp(result, exp - S21_MAX_EXP, tmp_quotient_int, true);
+      exp = decrease_exp(result, exp - S21_MAX_EXP, has_reminder, true);
     } else {
       bank_rounding(result, tmp_quotient_int, has_reminder);
     }
