@@ -2720,6 +2720,21 @@ START_TEST(s21_sub_208) {
 }
 END_TEST
 
+START_TEST(s21_sub_209) {
+  //-33586526831355.03650000 - -30936088168399986925418607 =
+  // 30936088168366400398587251.964
+  s21_decimal d1 = {{0x3c4d4cd0, 0x12ab5468, 0xb6, sign_and_exp_bits(1, 8)}};
+  s21_decimal d2 = {
+      {0xba3eb86f, 0xb33473f5, 0x1996f8, sign_and_exp_bits(1, 0)}};
+  s21_decimal correct = {
+      {0xdbfaccfc, 0x46da51a, 0x63f5bb7c, sign_and_exp_bits(0, 3)}};
+  s21_decimal result;
+
+  ck_assert_int_eq(s21_sub(d1, d2, &result), S21_OK);
+  ASSERT_BITS_EQ
+}
+END_TEST
+
 Suite *sub_tests(void) {
   Suite *s1 = suite_create(PRE_TEST_HEADER "S21_SUB" POST_TEST_HEADER);
   TCase *tc1_1 = tcase_create("S21_SUB");
@@ -2933,6 +2948,7 @@ Suite *sub_tests(void) {
   tcase_add_test(tc1_1, s21_sub_206);
   tcase_add_test(tc1_1, s21_sub_207);
   tcase_add_test(tc1_1, s21_sub_208);
+  tcase_add_test(tc1_1, s21_sub_209);
 
   return s1;
 }
