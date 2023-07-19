@@ -3079,42 +3079,42 @@ START_TEST(s21_div_236) {
 }
 END_TEST
 
-START_TEST(s21_div_237)
-{
-//-23.1 / 557287113874425267883810734 = -0.0000000000000000000000000415
-s21_decimal d1 = {{ 0xe7, 0x0, 0x0, sign_and_exp_bits(1, 1) }};
-s21_decimal d2 = {{ 0xb85b1fae, 0xfa60ec4e, 0x1ccfa22, sign_and_exp_bits(0, 0) }};
-s21_decimal correct = {{ 0x19f, 0x0, 0x0, sign_and_exp_bits(1, 28) }};
-s21_decimal result;
+START_TEST(s21_div_237) {
+  //-23.1 / 557287113874425267883810734 = -0.0000000000000000000000000415
+  s21_decimal d1 = {{0xe7, 0x0, 0x0, sign_and_exp_bits(1, 1)}};
+  s21_decimal d2 = {
+      {0xb85b1fae, 0xfa60ec4e, 0x1ccfa22, sign_and_exp_bits(0, 0)}};
+  s21_decimal correct = {{0x19f, 0x0, 0x0, sign_and_exp_bits(1, 28)}};
+  s21_decimal result;
 
-ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
-ASSERT_BITS_EQ
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
+  ASSERT_BITS_EQ
 }
 END_TEST
 
-START_TEST(s21_div_238)
-{
-//4.7371696578 / -71 = -0.0667206994056338028169014085
-s21_decimal d1 = {{ 0x792b9c2, 0xb, 0x0, sign_and_exp_bits(0, 10) }};
-s21_decimal d2 = {{ 0x47, 0x0, 0x0, sign_and_exp_bits(1, 0) }};
-s21_decimal correct = {{ 0xee642b45, 0x9f67510e, 0x227e693, sign_and_exp_bits(1, 28) }};
-s21_decimal result;
+START_TEST(s21_div_238) {
+  // 4.7371696578 / -71 = -0.0667206994056338028169014085
+  s21_decimal d1 = {{0x792b9c2, 0xb, 0x0, sign_and_exp_bits(0, 10)}};
+  s21_decimal d2 = {{0x47, 0x0, 0x0, sign_and_exp_bits(1, 0)}};
+  s21_decimal correct = {
+      {0xee642b45, 0x9f67510e, 0x227e693, sign_and_exp_bits(1, 28)}};
+  s21_decimal result;
 
-ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
-ASSERT_BITS_EQ
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
+  ASSERT_BITS_EQ
 }
 END_TEST
 
-START_TEST(s21_div_239)
-{
-//56.8647416427586824 / 90132950370.98 = 0.0000000006308984828379406559
-s21_decimal d1 = {{ 0xfa9c2508, 0x7e43dcf, 0x0, sign_and_exp_bits(0, 16) }};
-s21_decimal d2 = {{ 0x923fbaaa, 0x832, 0x0, sign_and_exp_bits(0, 2) }};
-s21_decimal correct = {{ 0x64e220df, 0x578e0446, 0x0, sign_and_exp_bits(0, 28) }};
-s21_decimal result;
+START_TEST(s21_div_239) {
+  // 56.8647416427586824 / 90132950370.98 = 0.0000000006308984828379406559
+  s21_decimal d1 = {{0xfa9c2508, 0x7e43dcf, 0x0, sign_and_exp_bits(0, 16)}};
+  s21_decimal d2 = {{0x923fbaaa, 0x832, 0x0, sign_and_exp_bits(0, 2)}};
+  s21_decimal correct = {
+      {0x64e220df, 0x578e0446, 0x0, sign_and_exp_bits(0, 28)}};
+  s21_decimal result;
 
-ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
-ASSERT_BITS_EQ
+  ck_assert_int_eq(s21_div(d1, d2, &result), S21_OK);
+  ASSERT_BITS_EQ
 }
 END_TEST
 

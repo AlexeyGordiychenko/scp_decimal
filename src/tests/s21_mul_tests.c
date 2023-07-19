@@ -3059,6 +3059,64 @@ START_TEST(s21_mul_236) {
 }
 END_TEST
 
+START_TEST(s21_mul_237) {
+  // 0.0047371696578 * -0.14084507042253521126760531 =
+  // -0.0006672069940563380281690126
+  s21_decimal d1 = {{0x792b9c2, 0xb, 0x0, sign_and_exp_bits(0, 13)}};
+  s21_decimal d2 = {
+      {0xe2d12053, 0xa81c2d12, 0xba682, sign_and_exp_bits(1, 26)}};
+  s21_decimal correct = {
+      {0x8262480e, 0xa2dfc0cf, 0x584dd, sign_and_exp_bits(1, 28)}};
+  s21_decimal result;
+
+  ck_assert_int_eq(s21_mul(d1, d2, &result), S21_OK);
+  ASSERT_BITS_EQ
+}
+END_TEST
+
+START_TEST(s21_mul_238) {
+  // 0.00047371696578 * -0.14084507042253521126760530 =
+  // -0.0000667206994056338028169013
+  s21_decimal d1 = {{0x792b9c2, 0xb, 0x0, sign_and_exp_bits(0, 14)}};
+  s21_decimal d2 = {
+      {0xe2d12052, 0xa81c2d12, 0xba682, sign_and_exp_bits(1, 26)}};
+  s21_decimal correct = {
+      {0xc03d0735, 0x5d166014, 0x8d49, sign_and_exp_bits(1, 28)}};
+  s21_decimal result;
+
+  ck_assert_int_eq(s21_mul(d1, d2, &result), S21_OK);
+  ASSERT_BITS_EQ
+}
+END_TEST
+
+START_TEST(s21_mul_239) {
+  // 688072.82296528544988060654870 * 55 = 37844005.263090699743433360178
+  s21_decimal d1 = {
+      {0xb40b1d16, 0x6f9c81d2, 0xde540cc7, sign_and_exp_bits(0, 23)}};
+  s21_decimal d2 = {{0x37, 0x0, 0x0, sign_and_exp_bits(0, 0)}};
+  s21_decimal correct = {
+      {0x496c8332, 0x16fc7a9a, 0x7a47d3d4, sign_and_exp_bits(0, 21)}};
+  s21_decimal result;
+
+  ck_assert_int_eq(s21_mul(d1, d2, &result), S21_OK);
+  ASSERT_BITS_EQ
+}
+END_TEST
+
+START_TEST(s21_mul_240) {
+  // 8287782888760.950000000 * 8287782888760.950000000 =
+  // 68687345211238797321826244.902
+  s21_decimal d1 = {{0xbd2e0980, 0x4817a2c5, 0x1c1, sign_and_exp_bits(0, 9)}};
+  s21_decimal d2 = {{0xbd2e0980, 0x4817a2c5, 0x1c1, sign_and_exp_bits(0, 9)}};
+  s21_decimal correct = {
+      {0xd0d09926, 0x3ac2882, 0xddf0d71d, sign_and_exp_bits(0, 3)}};
+  s21_decimal result;
+
+  ck_assert_int_eq(s21_mul(d1, d2, &result), S21_OK);
+  ASSERT_BITS_EQ
+}
+END_TEST
+
 Suite *mul_tests(void) {
   Suite *s1 = suite_create(PRE_TEST_HEADER "S21_MUL" POST_TEST_HEADER);
   TCase *tc1_1 = tcase_create("S21_MUL");
@@ -3301,6 +3359,10 @@ Suite *mul_tests(void) {
   tcase_add_test(tc1_1, s21_mul_234);
   tcase_add_test(tc1_1, s21_mul_235);
   tcase_add_test(tc1_1, s21_mul_236);
+  tcase_add_test(tc1_1, s21_mul_237);
+  tcase_add_test(tc1_1, s21_mul_238);
+  tcase_add_test(tc1_1, s21_mul_239);
+  tcase_add_test(tc1_1, s21_mul_240);
 
   return s1;
 }
