@@ -2708,6 +2708,20 @@ START_TEST(s21_add_209) {
 }
 END_TEST
 
+START_TEST(s21_add_210) {
+  //Segmentation fault
+  s21_decimal d1 = {{0x3c4d4cd0, 0x12ab5468, 0xb6, sign_and_exp_bits(1, 8)}};
+  s21_decimal d2 = {
+      {0xba3eb86f, 0xb33473f5, 0x1996f8, sign_and_exp_bits(1, 0)}};
+  // s21_decimal correct = {
+      // {0x2e061634, 0x55c4aa4, 0x63f5bb7c, sign_and_exp_bits(1, 3)}};
+  // s21_decimal result;
+
+  ck_assert_int_eq(s21_add(d1, d2, NULL), S21_OK);
+  // ASSERT_BITS_EQ
+}
+END_TEST
+
 Suite *add_tests(void) {
   Suite *s1 = suite_create(PRE_TEST_HEADER "S21_ADD" POST_TEST_HEADER);
   TCase *tc1_1 = tcase_create("S21_ADD");
@@ -2922,6 +2936,7 @@ Suite *add_tests(void) {
   tcase_add_test(tc1_1, s21_add_207);
   tcase_add_test(tc1_1, s21_add_208);
   tcase_add_test(tc1_1, s21_add_209);
+  tcase_add_test(tc1_1, s21_add_210);
 
   return s1;
 }
