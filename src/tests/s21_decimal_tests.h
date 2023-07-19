@@ -15,12 +15,6 @@
                   result.bits[i], correct.bits[i]);                           \
   }
 
-#define ASSERT_BIG_BITS_EQ                                                   \
-  for (int i = 0; i < 7; i++) {                                              \
-    ck_assert_msg(result.bits[i] == correct.bits[i], "bits[%d]: %lx != %lx", \
-                  i, result.bits[i], correct.bits[i]);                       \
-  }
-
 unsigned int sign_and_exp_bits(int sign, int exp);
 
 Suite *comparison_tests(void);
