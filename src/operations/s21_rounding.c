@@ -1,6 +1,9 @@
 #include "s21_common.h"
 
 int s21_floor(s21_decimal value, s21_decimal *result) {
+  if (result == NULL) {
+    return S21_OK;
+  }
   // MIN_DECIMAL_VALUE -79,228,162,514,264,337,593,543,950,335
   // MAX_DECIMAL_VALUE 79,228,162,514,264,337,593,543,950,335
   s21_decimal s21_min_decimal_value = {{-1, -1, -1, 1u << S21_SIGN_SHIFT}};
@@ -34,6 +37,9 @@ int s21_floor(s21_decimal value, s21_decimal *result) {
 }
 
 int s21_round(s21_decimal value, s21_decimal *result) {
+  if (result == NULL) {
+    return S21_OK;
+  }
   s21_decimal s21_min_decimal_value = {{-1, -1, -1, 1u << S21_SIGN_SHIFT}};
   s21_decimal s21_max_decimal_value = {{-1, -1, -1, 0}};
   s21_decimal zero_decimal = {{0, 0, 0, 0}};
@@ -82,6 +88,9 @@ int s21_round(s21_decimal value, s21_decimal *result) {
 }
 
 int s21_truncate(s21_decimal value, s21_decimal *result) {
+  if (result == NULL) {
+    return S21_OK;
+  }
   int exp = get_decimal_exp(value);
   decrease_exp(&value, exp, false, false);
   *result = value;
@@ -90,6 +99,9 @@ int s21_truncate(s21_decimal value, s21_decimal *result) {
 }
 
 int s21_negate(s21_decimal value, s21_decimal *result) {
+  if (result == NULL) {
+    return S21_OK;
+  }
   *result = value;
   unsigned int mask = 1u << S21_SIGN_SHIFT;
   if (check_bit(value.bits[3], 31) == 0) {
