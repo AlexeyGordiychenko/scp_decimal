@@ -1226,6 +1226,16 @@ START_TEST(s21_round_108) {
 }
 END_TEST
 
+START_TEST(s21_round_109) {
+  // 0,0 => 0
+  s21_decimal d1 = {{0, 0, 0, sign_and_exp_bits(0, 0)}};
+  // s21_decimal correct = {{0, 0, 0, sign_and_exp_bits(0, 0)}};
+  // s21_decimal result;
+  ck_assert_int_eq(s21_round(d1, NULL), S21_OK);
+  // ck_assert_int_eq(s21_is_equal(correct, result), S21_EQUAL);
+}
+END_TEST
+
 Suite *round_tests(void) {
   Suite *s1 = suite_create(PRE_TEST_HEADER "S21_ROUND" POST_TEST_HEADER);
   TCase *tc1_1 = tcase_create("S21_ROUND");
@@ -1340,6 +1350,7 @@ Suite *round_tests(void) {
   tcase_add_test(tc1_1, s21_round_106);
   tcase_add_test(tc1_1, s21_round_107);
   tcase_add_test(tc1_1, s21_round_108);
+  tcase_add_test(tc1_1, s21_round_109);
 
   return s1;
 }
