@@ -21,9 +21,9 @@ int get_decimal_sign(s21_decimal d) {
   return (d.bits[3] >> S21_SIGN_SHIFT) & 0x1;
 }
 
-int get_decimal_sign_big(s21_big_decimal d) {
-  return (d.bits[6] >> S21_SIGN_SHIFT) & 0x1;
-}
+// int get_decimal_sign_big(s21_big_decimal d) {
+//   return (d.bits[6] >> S21_SIGN_SHIFT) & 0x1;
+// }
 
 int get_decimal_exp(s21_decimal d) {
   return (d.bits[3] >> S21_EXP_SHIFT) & 0xFF;
@@ -116,10 +116,6 @@ int decrease_exp_big(s21_big_decimal *d, int n, int reminder, bool with_round) {
   int last_reminder = reminder;
   bool has_reminder = reminder != 0 ? true : false;
 
-  // for (int i = 0; i < n && exp > 0; i++, exp--) {
-  //   last_reminder = divide_mantissa_by_10_big(d);
-  //   if (i > 0 && last_reminder && !has_reminder) has_reminder = true;
-  // }
   for (int i = 1; i <= n && exp > 0; i++, exp--) {
     last_reminder = divide_mantissa_by_10_big(d);
     if (!has_reminder && i != n && last_reminder) has_reminder = true;

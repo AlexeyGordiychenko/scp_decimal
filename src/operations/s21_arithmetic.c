@@ -27,36 +27,39 @@ int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
 
 int s21_mul(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   int flag = S21_OK;
-  s21_big_decimal value_1_big = {{0, 0, 0, 0, 0, 0, 0}};
-  s21_big_decimal value_2_big = {{0, 0, 0, 0, 0, 0, 0}};
-  for (int i = 0; i < 3; i++) {
-    value_1_big.bits[i] = (uint64_t)value_1.bits[i] & S21_MAX4BITS;
-    value_2_big.bits[i] = (uint64_t)value_2.bits[i] & S21_MAX4BITS;
-  }
-  s21_big_decimal mul_res = bits_mult(&value_1_big, &value_2_big, &flag);
-  int res_exp = get_decimal_exp(value_1) + get_decimal_exp(value_2);
-  int res_sign = get_decimal_sign(value_1) != get_decimal_sign(value_2) ? 1 : 0;
-  mul_res.bits[6] = ((res_exp << 16) | (res_sign << 31)) & S21_MAX4BITS;
-  from_big_to_decimal_with_rounding(&mul_res);
-  if (mul_res.bits[3] != 0 || mul_res.bits[4] != 0 || mul_res.bits[5] != 0) {
-    if (!res_sign)
-      flag = S21_HUGE_ERR;
-    else
-      flag = S21_SMALL_ERR;
-  }
-  if (mul_res.bits[0] == 0 && mul_res.bits[1] == 0 && mul_res.bits[2] == 0) {
-    mul_res.bits[6] = res_sign << 31;
-  }
-  if (flag == S21_OK) {
-    result->bits[0] = mul_res.bits[0] & S21_MAX4BITS;
-    result->bits[1] = mul_res.bits[1] & S21_MAX4BITS;
-    result->bits[2] = mul_res.bits[2] & S21_MAX4BITS;
-    result->bits[3] = mul_res.bits[6] & S21_MAX4BITS;
-  } else {
-    result->bits[0] = 0;
-    result->bits[1] = 0;
-    result->bits[2] = 0;
-    result->bits[3] = 0;
+  if (result != NULL) {
+    s21_big_decimal value_1_big = {{0, 0, 0, 0, 0, 0, 0}};
+    s21_big_decimal value_2_big = {{0, 0, 0, 0, 0, 0, 0}};
+    for (int i = 0; i < 3; i++) {
+      value_1_big.bits[i] = (uint64_t)value_1.bits[i] & S21_MAX4BITS;
+      value_2_big.bits[i] = (uint64_t)value_2.bits[i] & S21_MAX4BITS;
+    }
+    s21_big_decimal mul_res = bits_mult(&value_1_big, &value_2_big, &flag);
+    int res_exp = get_decimal_exp(value_1) + get_decimal_exp(value_2);
+    int res_sign =
+        get_decimal_sign(value_1) != get_decimal_sign(value_2) ? 1 : 0;
+    mul_res.bits[6] = ((res_exp << 16) | (res_sign << 31)) & S21_MAX4BITS;
+    from_big_to_decimal_with_rounding(&mul_res);
+    if (mul_res.bits[3] != 0 || mul_res.bits[4] != 0 || mul_res.bits[5] != 0) {
+      if (!res_sign)
+        flag = S21_HUGE_ERR;
+      else
+        flag = S21_SMALL_ERR;
+    }
+    if (mul_res.bits[0] == 0 && mul_res.bits[1] == 0 && mul_res.bits[2] == 0) {
+      mul_res.bits[6] = res_sign << 31;
+    }
+    if (flag == S21_OK) {
+      result->bits[0] = mul_res.bits[0] & S21_MAX4BITS;
+      result->bits[1] = mul_res.bits[1] & S21_MAX4BITS;
+      result->bits[2] = mul_res.bits[2] & S21_MAX4BITS;
+      result->bits[3] = mul_res.bits[6] & S21_MAX4BITS;
+    } else {
+      result->bits[0] = 0;
+      result->bits[1] = 0;
+      result->bits[2] = 0;
+      result->bits[3] = 0;
+    }
   }
   return flag;
 }
