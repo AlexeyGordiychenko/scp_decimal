@@ -1,6 +1,9 @@
 #include "s21_common.h"
 
 int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
+  if (result == NULL) {
+    return S21_OK;
+  }
   decimal_normalization(&value_1, &value_2);
   int flag = add_mantis(value_1, value_2, result);
   if (flag != 0) {
@@ -13,6 +16,9 @@ int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
 }
 
 int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
+  if (result == NULL) {
+    return S21_OK;
+  }
   decimal_normalization(&value_1, &value_2);
   int flag = sub_mantis(value_1, value_2, result);
   set_same_exp(value_1, result);
@@ -65,6 +71,9 @@ int s21_mul(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
 }
 
 int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
+  if (result == NULL) {
+    return S21_OK;
+  }
   // get sign and exp here just to maintain them both for the result even if
   // value_1 or value_2 is zero (behaviour as in C#)
   int result_sign = get_decimal_sign(value_1) ^ get_decimal_sign(value_2);
