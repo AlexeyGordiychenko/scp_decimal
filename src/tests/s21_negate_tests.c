@@ -1351,11 +1351,11 @@ START_TEST(s21_negate_103) {
 END_TEST
 
 START_TEST(s21_negate_104) {
-  //Segmentation fault test
+  // Segmentation fault test
   s21_decimal d1 = {
       {0xffffffff, 0xffffffff, 0xffffffff, sign_and_exp_bits(1, 0)}};
   // s21_decimal correct = {
-      // {0xffffffff, 0xffffffff, 0xffffffff, sign_and_exp_bits(0, 0)}};
+  // {0xffffffff, 0xffffffff, 0xffffffff, sign_and_exp_bits(0, 0)}};
   // s21_decimal result;
 
   ck_assert_int_eq(s21_negate(d1, NULL), S21_OK);

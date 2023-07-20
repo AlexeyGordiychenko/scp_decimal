@@ -1251,7 +1251,7 @@ START_TEST(s21_truncate_111) {
 END_TEST
 
 START_TEST(s21_truncate_112) {
-  //Segmentation fault test
+  // Segmentation fault test
   s21_decimal d1 = {
       {0xffffffff, 0xffffffff, 0xffffffff, sign_and_exp_bits(1, 15)}};
   // s21_decimal correct = {{0xbe7b9d58, 0x480e, 0x0, sign_and_exp_bits(1, 0)}};
