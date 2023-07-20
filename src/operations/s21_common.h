@@ -25,11 +25,7 @@ static const s21_big_decimal S21_D_ONE_BIG = {{1, 0, 0, 0, 0, 0, 0}};
 static const s21_decimal S21_D_ZERO = {{0, 0, 0, 0}};
 
 int check_bit(unsigned int numb, int pos);
-void print_binary(unsigned int num);
 unsigned int set_bit(unsigned int numb, int pos);
-void print_binary_range(unsigned int num, int l, int r);
-void print_full_binary(unsigned int num);
-void print_decimal_bits(s21_decimal obj);
 int get_decimal_sign(s21_decimal d);
 int get_decimal_sign_big(s21_big_decimal d);
 int get_decimal_exp(s21_decimal d);
@@ -71,9 +67,8 @@ int get_bit192(s21_big_decimal d, int bit_position);
 
 void div_mantissas(s21_decimal value_1, s21_decimal value_2,
                    s21_decimal* quotient, s21_decimal* remainder);
-void from_float_to_decimal_small(float src, s21_decimal* dst);
-void from_float_to_decimal_medium(float src, s21_decimal* dst);
-void from_float_to_decimal_large(float src, s21_decimal* dst);
+double conv_round(float src);
+void convert_to_decimal(double src, s21_decimal* dst);
 int truncate_trailing_zeros(s21_decimal* d, int from_exp, int to_exp);
 void bank_rounding(s21_decimal* d, int quotient, bool has_reminder);
 void bank_rounding_big(s21_big_decimal* d, int quotient, bool has_reminder);

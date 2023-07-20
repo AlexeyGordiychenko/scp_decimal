@@ -590,44 +590,38 @@ void div_mantissas(s21_decimal value_1, s21_decimal value_2,
   *remainder = temp_remainder;
 }
 
-void from_float_to_decimal_small(float src, s21_decimal *dst) {
-  dst->bits[3] = dst->bits[2] = dst->bits[1] = dst->bits[0] = 0;
+double conv_round(float src) {
+  char e[64];
+  sprintf(e, "%E", src);
 
-  int sign = 0;
-  if (src < 0) {
-    sign = 1;
-    src = -src;
+  int sign = src < 0 ? 1 : 0;
+  double new_src = 0;
+
+  int mypow = 0;
+  for (int i = 0 + sign; i < 8 + sign; ++i) {
+    if (e[i] >= '0' && e[i] <= '9') {
+      new_src += (e[i] - '0') * pow(10, -mypow);
+      mypow++;
+    }
   }
 
-  int reminder = 0;
-  while (src < 1) {
-    src *= 10;
-    ++reminder;
+  int myexp = 0;
+  for (int i = 10 + sign; e[i] != '\0'; ++i) {
+    myexp *= 10;
+    myexp += e[i] - '0';
   }
 
-  unsigned long num = src;
-  unsigned long next = src;
-  for (int i = 0; next < powf(2, 32) && next != 0; ++i) {
-    num = next;
-    next = src * powf(10.f, i);
+  if (e[9 + sign] == '+') {
+    new_src *= pow(10, myexp);
+  } else {
+    new_src /= pow(10, myexp);
   }
 
-  int exp = floor(log10(num) + 1) - floor(log10(src) + 1) + reminder;
-
-  if (exp > 0) {
-    dst->bits[3] = (exp << S21_EXP_SHIFT);
-  }
-  if (sign == 1) {
-    dst->bits[3] = set_bit(dst->bits[3], 31);
-  }
-
-  for (int i = 0; i < 32; ++i) {
-    if ((num & 1) == 1) dst->bits[i / 32] = set_bit(dst->bits[i / 32], i % 32);
-    num = num >> 1;
-  }
+  if (sign) new_src = -new_src;
+  return new_src;
 }
 
-void from_float_to_decimal_medium(float src, s21_decimal *dst) {
+void convert_to_decimal(double src, s21_decimal *dst) {
   dst->bits[3] = dst->bits[2] = dst->bits[1] = dst->bits[0] = 0;
 
   int sign = 0;
@@ -636,47 +630,30 @@ void from_float_to_decimal_medium(float src, s21_decimal *dst) {
     src = -src;
   }
 
-  unsigned long long num = src;
-  unsigned long long next = src;
-  for (int i = 0; next < pow(2, 64) && next != 0; ++i) {
-    num = next;
-    next = src * powf(10.f, i);
+  const double max_dec = (pow(2, 96) - 1);
+  double scaled_value = src;
+  int scale = 0;
+
+  while (scaled_value <= max_dec && scale < 28 &&
+         scaled_value != floor(scaled_value)) {
+    scaled_value *= 10.;
+    scale++;
   }
 
-  int exp = floorf(log10(num) + 1) - floorf(log10(src) + 1);
+  double mypow = pow(10., scale);
 
-  if (exp > 0) {
-    dst->bits[3] = (exp << S21_EXP_SHIFT);
-  }
-  if (sign == 1) {
-    dst->bits[3] = set_bit(dst->bits[3], 31);
-  }
+  while (scaled_value <= max_dec && scale < 28 && scaled_value / mypow != src) {
+    scale++;
+    scaled_value = src * pow(10., scale);
 
-  for (int i = 0; i < 64; ++i) {
-    if ((num & 1) == 1) dst->bits[i / 32] = set_bit(dst->bits[i / 32], i % 32);
-    num = num >> 1;
-  }
-}
-
-void from_float_to_decimal_large(float src, s21_decimal *dst) {
-  dst->bits[3] = dst->bits[2] = dst->bits[1] = dst->bits[0] = 0;
-
-  int sign = 0;
-  if (src < 0) {
-    sign = 1;
-    src = -src;
+    mypow = pow(10., scale);
   }
 
-  float scaledValue = src;
-
+  dst->bits[3] = (scale << 16) | (sign << 31);
   for (int i = 0; i < 96; ++i) {
-    if (fmodf(floorf(scaledValue), 2) == 1)
+    if (fmod(floor(scaled_value), 2) == 1)
       dst->bits[i / 32] = set_bit(dst->bits[i / 32], i % 32);
-    scaledValue /= 2;
-  }
-
-  if (sign == 1) {
-    dst->bits[3] = set_bit(dst->bits[3], 31);
+    scaled_value /= 2;
   }
 }
 

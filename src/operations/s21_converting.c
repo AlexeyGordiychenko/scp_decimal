@@ -43,15 +43,11 @@ int s21_from_float_to_decimal(float src, s21_decimal *dst) {
   } else {
     if (src == 0) {
       dst->bits[3] = dst->bits[2] = dst->bits[1] = dst->bits[0] = 0;
-    } else if (src <= powf(2, 32) && src > -powf(2, 32) - 1) {
-      from_float_to_decimal_small(src, dst);
-    } else if (src <= powf(2, 64) && src > -powf(2, 64) - 1) {
-      from_float_to_decimal_medium(src, dst);
-    } else if (src <= powf(2, 96) && src > -powf(2, 96) - 1) {
-      from_float_to_decimal_large(src, dst);
+    } else {
+      double new_src = conv_round(src);
+      convert_to_decimal(new_src, dst);
     }
   }
-
   return error_code;
 }
 
@@ -100,12 +96,17 @@ int s21_from_decimal_to_float(s21_decimal src, float *dst) {
   } else {
     int exp = get_decimal_exp(src);
 
-    *dst = ((float)(unsigned int)src.bits[0]);
-    *dst += ((float)(unsigned int)src.bits[1]) * powf(2.f, 32.f);
-    *dst += ((float)(unsigned int)src.bits[2]) * powf(2.f, 64.f);
+    double tmp = ((double)(unsigned int)src.bits[0]);
+    tmp += ((double)(unsigned int)src.bits[1]) * pow(2, 32);
+    tmp += ((double)(unsigned int)src.bits[2]) * pow(2, 64);
 
-    *dst /= powf(10.f, exp);
-    if (get_decimal_sign(src)) *dst = -(*dst);
+    tmp /= pow(10, exp);
+
+    if (get_decimal_sign(src))
+      *dst = -tmp;
+    else
+      *dst = tmp;
+    *dst = (float)conv_round(*dst);
   }
 
   return error_code;

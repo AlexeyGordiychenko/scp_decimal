@@ -134,13 +134,63 @@ START_TEST(s21_dec_to_int_8) {
 }
 END_TEST
 
+START_TEST(s21_dec_to_int_9) {
+  int isrc = 0;
+  s21_decimal src;
+  s21_from_int_to_decimal(isrc, &src);
+  int dst;
+  s21_from_decimal_to_int(src, &dst);
+  ck_assert_int_eq(isrc, dst);
+}
+END_TEST
+
+START_TEST(s21_dec_to_int_10) {
+  int isrc = -1;
+  s21_decimal src;
+  s21_from_int_to_decimal(isrc, &src);
+  int dst;
+  s21_from_decimal_to_int(src, &dst);
+  ck_assert_int_eq(isrc, dst);
+}
+END_TEST
+
+START_TEST(s21_dec_to_int_11) {
+  int isrc = 1;
+  s21_decimal src;
+  s21_from_int_to_decimal(isrc, &src);
+  int dst;
+  s21_from_decimal_to_int(src, &dst);
+  ck_assert_int_eq(isrc, dst);
+}
+END_TEST
+
+START_TEST(s21_dec_to_int_12) {
+  int isrc = __INT_MAX__;
+  s21_decimal src;
+  s21_from_int_to_decimal(isrc, &src);
+  int dst;
+  s21_from_decimal_to_int(src, &dst);
+  ck_assert_int_eq(isrc, dst);
+}
+END_TEST
+
+START_TEST(s21_dec_to_int_13) {
+  int isrc = -__INT_MAX__ - 1;
+  s21_decimal src;
+  s21_from_int_to_decimal(isrc, &src);
+  int dst;
+  s21_from_decimal_to_int(src, &dst);
+  ck_assert_int_eq(isrc, dst);
+}
+END_TEST
+
 START_TEST(s21_dec_to_float_1) {
   float fsrc = 0.3333333333333333333333333333333;
   s21_decimal src;
   s21_from_float_to_decimal(fsrc, &src);
   float dst;
   s21_from_decimal_to_float(src, &dst);
-  ck_assert_float_eq(dst, fsrc);
+  ck_assert_float_eq(dst, (float)conv_round(fsrc));
 }
 END_TEST
 
@@ -150,7 +200,7 @@ START_TEST(s21_dec_to_float_2) {
   s21_from_float_to_decimal(fsrc, &src);
   float dst;
   s21_from_decimal_to_float(src, &dst);
-  ck_assert_float_eq(dst, fsrc);
+  ck_assert_float_eq(dst, (float)conv_round(fsrc));
 }
 END_TEST
 
@@ -160,7 +210,7 @@ START_TEST(s21_dec_to_float_3) {
   s21_from_float_to_decimal(fsrc, &src);
   float dst;
   s21_from_decimal_to_float(src, &dst);
-  ck_assert_float_eq(dst, fsrc);
+  ck_assert_float_eq(dst, (float)conv_round(fsrc));
 }
 END_TEST
 
@@ -174,7 +224,7 @@ START_TEST(s21_dec_to_float_5) {
   s21_decimal src = {{-1, -1, -1, 0}};
   float dst;
   s21_from_decimal_to_float(src, &dst);
-  ck_assert_float_eq(dst, powf(2, 96));
+  ck_assert_float_eq(dst, (float)conv_round(pow(2, 96)));
 }
 END_TEST
 
@@ -184,7 +234,7 @@ START_TEST(s21_dec_to_float_6) {
   s21_from_float_to_decimal(fsrc, &src);
   float dst;
   s21_from_decimal_to_float(src, &dst);
-  ck_assert_float_eq(dst, fsrc);
+  ck_assert_float_eq(dst, (float)conv_round(fsrc));
 }
 END_TEST
 
@@ -194,7 +244,7 @@ START_TEST(s21_dec_to_float_7) {
   s21_from_float_to_decimal(fsrc, &src);
   float dst;
   s21_from_decimal_to_float(src, &dst);
-  ck_assert_float_eq(dst, fsrc);
+  ck_assert_float_eq(dst, (float)conv_round(fsrc));
 }
 END_TEST
 
@@ -204,7 +254,7 @@ START_TEST(s21_dec_to_float_8) {
   s21_from_float_to_decimal(fsrc, &src);
   float dst;
   s21_from_decimal_to_float(src, &dst);
-  ck_assert_float_eq(dst, fsrc);
+  ck_assert_float_eq(dst, (float)conv_round(fsrc));
 }
 END_TEST
 
@@ -214,7 +264,7 @@ START_TEST(s21_dec_to_float_9) {
   s21_from_float_to_decimal(fsrc, &src);
   float dst;
   s21_from_decimal_to_float(src, &dst);
-  ck_assert_float_eq(dst, fsrc);
+  ck_assert_float_eq(dst, (float)conv_round(fsrc));
 }
 END_TEST
 
@@ -224,7 +274,107 @@ START_TEST(s21_dec_to_float_10) {
   s21_from_float_to_decimal(fsrc, &src);
   float dst;
   s21_from_decimal_to_float(src, &dst);
-  ck_assert_float_eq(dst, fsrc);
+  ck_assert_float_eq(dst, (float)conv_round(fsrc));
+}
+END_TEST
+
+START_TEST(s21_dec_to_float_11) {
+  float fsrc = 0.000001234567890;
+  s21_decimal src;
+  s21_from_float_to_decimal(fsrc, &src);
+  float dst;
+  s21_from_decimal_to_float(src, &dst);
+  ck_assert_float_eq(dst, (float)conv_round(fsrc));
+}
+END_TEST
+
+START_TEST(s21_dec_to_float_12) {
+  float fsrc = 1234567890.0;
+  s21_decimal src;
+  s21_from_float_to_decimal(fsrc, &src);
+  float dst;
+  s21_from_decimal_to_float(src, &dst);
+  ck_assert_float_eq(dst, (float)conv_round(fsrc));
+}
+END_TEST
+
+START_TEST(s21_dec_to_float_13) {
+  float fsrc = 1234567890.1234567890;
+  s21_decimal src;
+  s21_from_float_to_decimal(fsrc, &src);
+  float dst;
+  s21_from_decimal_to_float(src, &dst);
+  ck_assert_float_eq(dst, (float)conv_round(fsrc));
+}
+END_TEST
+
+START_TEST(s21_dec_to_float_14) {
+  float fsrc = 12345.67890;
+  s21_decimal src;
+  s21_from_float_to_decimal(fsrc, &src);
+  float dst;
+  s21_from_decimal_to_float(src, &dst);
+  ck_assert_float_eq(dst, (float)conv_round(fsrc));
+}
+END_TEST
+
+START_TEST(s21_dec_to_float_15) {
+  float fsrc = 2394609.283479727364423;
+  s21_decimal src;
+  s21_from_float_to_decimal(fsrc, &src);
+  float dst;
+  s21_from_decimal_to_float(src, &dst);
+  ck_assert_float_eq(dst, (float)conv_round(fsrc));
+}
+END_TEST
+
+START_TEST(s21_dec_to_float_16) {
+  float fsrc = 0.191919191919;
+  s21_decimal src;
+  s21_from_float_to_decimal(fsrc, &src);
+  float dst;
+  s21_from_decimal_to_float(src, &dst);
+  ck_assert_float_eq(dst, (float)conv_round(fsrc));
+}
+END_TEST
+
+START_TEST(s21_dec_to_float_17) {
+  float fsrc = 0.919191919191;
+  s21_decimal src;
+  s21_from_float_to_decimal(fsrc, &src);
+  float dst;
+  s21_from_decimal_to_float(src, &dst);
+  ck_assert_float_eq(dst, (float)conv_round(fsrc));
+}
+END_TEST
+
+START_TEST(s21_dec_to_float_18) {
+  float fsrc = 2.5010501050105;
+  s21_decimal src;
+  s21_from_float_to_decimal(fsrc, &src);
+  float dst;
+  s21_from_decimal_to_float(src, &dst);
+  ck_assert_float_eq(dst, (float)conv_round(fsrc));
+}
+END_TEST
+
+START_TEST(s21_dec_to_float_19) {
+  float fsrc = powf(2, 67);
+  s21_decimal src;
+  s21_from_float_to_decimal(fsrc, &src);
+  float dst;
+  s21_from_decimal_to_float(src, &dst);
+  ck_assert_float_eq(dst, (float)conv_round(fsrc));
+}
+END_TEST
+
+START_TEST(s21_dec_to_float_20) {
+  float fsrc = 0.000000491919191919;
+  s21_decimal src;
+  s21_from_float_to_decimal(fsrc, &src);
+  float dst;
+  s21_from_decimal_to_float(src, &dst);
+  ck_assert_float_eq(dst, (float)conv_round(fsrc));
 }
 END_TEST
 
@@ -254,6 +404,11 @@ Suite *converting_tests(void) {
   tcase_add_test(tc, s21_dec_to_int_6);
   tcase_add_test(tc, s21_dec_to_int_7);
   tcase_add_test(tc, s21_dec_to_int_8);
+  tcase_add_test(tc, s21_dec_to_int_9);
+  tcase_add_test(tc, s21_dec_to_int_10);
+  tcase_add_test(tc, s21_dec_to_int_11);
+  tcase_add_test(tc, s21_dec_to_int_12);
+  tcase_add_test(tc, s21_dec_to_int_13);
 
   tcase_add_test(tc, s21_dec_to_float_1);
   tcase_add_test(tc, s21_dec_to_float_2);
@@ -265,6 +420,16 @@ Suite *converting_tests(void) {
   tcase_add_test(tc, s21_dec_to_float_8);
   tcase_add_test(tc, s21_dec_to_float_9);
   tcase_add_test(tc, s21_dec_to_float_10);
+  tcase_add_test(tc, s21_dec_to_float_11);
+  tcase_add_test(tc, s21_dec_to_float_12);
+  tcase_add_test(tc, s21_dec_to_float_13);
+  tcase_add_test(tc, s21_dec_to_float_14);
+  tcase_add_test(tc, s21_dec_to_float_15);
+  tcase_add_test(tc, s21_dec_to_float_16);
+  tcase_add_test(tc, s21_dec_to_float_17);
+  tcase_add_test(tc, s21_dec_to_float_18);
+  tcase_add_test(tc, s21_dec_to_float_19);
+  tcase_add_test(tc, s21_dec_to_float_20);
 
   suite_add_tcase(s, tc);
   return s;
