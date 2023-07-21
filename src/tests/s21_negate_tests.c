@@ -1215,7 +1215,7 @@ START_TEST(s21_negate_104) {
   s21_decimal d1 = {
       {0xffffffff, 0xffffffff, 0xffffffff, sign_and_exp_bits(1, 0)}};
 
-  ck_assert_int_eq(s21_negate(d1, NULL), S21_OK);
+  ck_assert_int_eq(s21_negate(d1, NULL), S21_ERROR);
   // ASSERT_BITS_EQ
 }
 END_TEST

@@ -1239,7 +1239,7 @@ START_TEST(s21_floor_109) {
   s21_decimal d1 = {{0, 0, 0, sign_and_exp_bits(0, 0)}};
   // s21_decimal correct = {{0, 0, 0, sign_and_exp_bits(0, 0)}};
   // s21_decimal result;
-  ck_assert_int_eq(s21_floor(d1, NULL), S21_OK);
+  ck_assert_int_eq(s21_floor(d1, NULL), S21_ERROR);
   // ck_assert_int_eq(s21_is_equal(correct, result), S21_EQUAL);
 }
 END_TEST

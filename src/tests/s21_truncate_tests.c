@@ -1265,7 +1265,7 @@ START_TEST(s21_truncate_112) {
   // s21_decimal correct = {{0xbe7b9d58, 0x480e, 0x0, sign_and_exp_bits(1, 0)}};
   // s21_decimal result;
 
-  ck_assert_int_eq(s21_truncate(d1, NULL), S21_OK);
+  ck_assert_int_eq(s21_truncate(d1, NULL), S21_ERROR);
   // ASSERT_BITS_EQ
 }
 END_TEST
