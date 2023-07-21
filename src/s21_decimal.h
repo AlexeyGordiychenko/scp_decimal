@@ -9,6 +9,12 @@ typedef struct {
   unsigned int bits[4];
 } s21_decimal;
 
+/* * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ *                 SUB-LIBRARIES
+ *
+ * * * * * * * * * * * * * * * * * * * * * * * * */
+
 #include "operations/s21_arithmetic.h"
 #include "operations/s21_comparison.h"
 #include "operations/s21_converting.h"

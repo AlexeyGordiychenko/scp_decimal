@@ -1,5 +1,13 @@
 #include "s21_decimal_tests.h"
 
+/* * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ *
+ *           TRUNCATE FUNCTION TESTS
+ *
+ *
+ * * * * * * * * * * * * * * * * * * * * * * * * */
+
 START_TEST(s21_truncate_1) {
   //-38344221243.3684 -> -38344221243
   s21_decimal d1 = {{0x18dd2f14, 0x15cbd, 0x0, sign_and_exp_bits(1, 4)}};

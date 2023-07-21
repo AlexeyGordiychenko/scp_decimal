@@ -1,5 +1,13 @@
 #include "s21_decimal_tests.h"
 
+/* * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ *
+ *           CONVERTING FUNCTIONS TESTS
+ *
+ *
+ * * * * * * * * * * * * * * * * * * * * * * * * */
+
 START_TEST(s21_int_to_dec_1) {
   int src = 0;
   s21_decimal dst;

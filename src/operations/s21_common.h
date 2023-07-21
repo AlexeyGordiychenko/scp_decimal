@@ -6,6 +6,16 @@
 
 #include "../s21_decimal.h"
 
+typedef struct {
+  uint64_t bits[7];
+} s21_big_decimal;
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ *                      CONSTANTS
+ *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 #define S21_MAX_EXP 28
 #define S21_SIGN_SHIFT 31
 #define S21_EXP_SHIFT 16
@@ -27,6 +37,12 @@ enum error_enum {
 static const s21_decimal S21_D_ONE = {{1, 0, 0, 0}};
 static const s21_big_decimal S21_D_ONE_BIG = {{1, 0, 0, 0, 0, 0, 0}};
 static const s21_decimal S21_D_ZERO = {{0, 0, 0, 0}};
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ *                   COMMON FUNCTIONS
+ *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 int check_bit(unsigned int numb, int pos);
 unsigned int set_bit(unsigned int numb, int pos);
@@ -81,4 +97,4 @@ s21_big_decimal bits_mult(s21_big_decimal* value_1_big,
                           s21_big_decimal* value_2_big, int* flag);
 int get_div_result(s21_decimal value_1, s21_decimal value_2,
                    s21_decimal* result, int result_sign, int exp1, int exp2);
-#endif
+#endif  // S21_COMMON_H

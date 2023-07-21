@@ -17,6 +17,12 @@
 
 unsigned int sign_and_exp_bits(int sign, int exp);
 
+/* * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ *               TESTING FUNCTIONS
+ *
+ * * * * * * * * * * * * * * * * * * * * * * * * */
+
 Suite *comparison_tests(void);
 Suite *converting_tests(void);
 Suite *truncate_tests(void);

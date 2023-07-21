@@ -1,5 +1,13 @@
 #include "s21_decimal_tests.h"
 
+/* * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ *
+ *             COMMON.C FUNCTIONS TESTS
+ *
+ *
+ * * * * * * * * * * * * * * * * * * * * * * * * */
+
 START_TEST(s21_common_0) {
   // 79228162514264337593543950335 + 1 = false
   s21_decimal result = {

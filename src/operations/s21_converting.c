@@ -1,5 +1,11 @@
 #include "s21_common.h"
 
+/**
+ * @brief Convert int to s21_decial
+ * @param src Number (from)
+ * @param dst Number (to)
+ * @return num Error code
+ */
 int s21_from_int_to_decimal(int src, s21_decimal *dst) {
   int error_code = S21_OK;
   if (dst == NULL) {
@@ -31,6 +37,12 @@ int s21_from_int_to_decimal(int src, s21_decimal *dst) {
   return error_code;
 }
 
+/**
+ * @brief Convert float to s21_decial
+ * @param src Number (from)
+ * @param dst Number (to)
+ * @return num Error code
+ */
 int s21_from_float_to_decimal(float src, s21_decimal *dst) {
   int error_code = S21_OK;
 
@@ -51,6 +63,12 @@ int s21_from_float_to_decimal(float src, s21_decimal *dst) {
   return error_code;
 }
 
+/**
+ * @brief Convert s21_decimal to int
+ * @param src Number (from)
+ * @param dst Number (to)
+ * @return num Error code
+ */
 int s21_from_decimal_to_int(s21_decimal src, int *dst) {
   int error_code = S21_OK;
 
@@ -88,6 +106,12 @@ int s21_from_decimal_to_int(s21_decimal src, int *dst) {
   return error_code;
 }
 
+/**
+ * @brief Convert s21_decimal to float
+ * @param src Number (from)
+ * @param dst Number (to)
+ * @return num Error code
+ */
 int s21_from_decimal_to_float(s21_decimal src, float *dst) {
   int error_code = S21_OK;
 

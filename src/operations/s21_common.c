@@ -2,11 +2,23 @@
 
 #include <stdint.h>
 
+/**
+ * @brief Raturn value of certain bit
+ * @param numb Number
+ * @param pos Bit position
+ * @return num Bit value
+ */
 int check_bit(unsigned int numb, int pos) {
   int a = 1u << pos;
   return (numb & a) > 0 ? 1 : 0;
 }
 
+/**
+ * @brief Change value of a certain bit
+ * @param numb Number
+ * @param pos Bit position
+ * @return numb Changed number
+ */
 unsigned int set_bit(unsigned int numb, int pos) {
   int bit = check_bit(numb, pos);
   if (bit == 0) {
@@ -17,45 +29,94 @@ unsigned int set_bit(unsigned int numb, int pos) {
   return numb;
 }
 
+/**
+ * @brief Raturn value of a sign bit
+ * @param d Number
+ * @return num Value of sign bit
+ */
 int get_decimal_sign(s21_decimal d) {
   return (d.bits[3] >> S21_SIGN_SHIFT) & 0x1;
 }
 
-// int get_decimal_sign_big(s21_big_decimal d) {
-//   return (d.bits[6] >> S21_SIGN_SHIFT) & 0x1;
-// }
-
-int get_decimal_exp(s21_decimal d) {
-  return (d.bits[3] >> S21_EXP_SHIFT) & 0xFF;
-}
-
-int get_decimal_exp_big(s21_big_decimal d) {
-  return (d.bits[6] >> S21_EXP_SHIFT) & 0xFF;
-}
-
+/**
+ * @brief Sets value of a sign bit
+ * @param d Number
+ * @param sign Sign value
+ * @return num Value of exp bit
+ */
 void set_decimal_sign(s21_decimal *d, int sign) {
   d->bits[3] = (d->bits[3] & 0x7FFFFFFF) | ((unsigned)sign << S21_SIGN_SHIFT);
 }
 
+/**
+ * @brief Raturn value of a sign bit
+ * @param d Number
+ * @return num Value of sign bit
+ */
+int get_decimal_exp(s21_decimal d) {
+  return (d.bits[3] >> S21_EXP_SHIFT) & 0xFF;
+}
+
+/**
+ * @brief Sets value of a exp bit
+ * @param d Number
+ * @param exp Exp value
+ * @return num Value of exp bit
+ */
 void set_decimal_exp(s21_decimal *d, int exp) {
   d->bits[3] = (d->bits[3] & 0xFF00FFFF) | ((unsigned)exp << S21_EXP_SHIFT);
 }
 
+/**
+ * @brief Raturn value of a exp bit from s21_big_decimal
+ * @param d Number
+ * @return num Value of exp bit
+ */
+int get_decimal_exp_big(s21_big_decimal d) {
+  return (d.bits[6] >> S21_EXP_SHIFT) & 0xFF;
+}
+
+/**
+ * @brief Sets value of a exp bit in s21_big_decimal
+ * @param d Number
+ * @param exp Exp value
+ * @return num Value of exp bit
+ */
 void set_decimal_exp_big(s21_big_decimal *d, int exp) {
   d->bits[6] = (d->bits[6] & 0xFF00FFFF) | ((unsigned)exp << S21_EXP_SHIFT);
 }
 
+/**
+ * @brief Check if number is zero
+ * @param d Number
+ * @param use_all_bits Flag
+ * @return num Result of checking
+ */
 int decimal_is_zero(s21_decimal d, bool use_all_bits) {
   return d.bits[0] == 0 && d.bits[1] == 0 && d.bits[2] == 0 &&
          (use_all_bits ? d.bits[3] == 0 : true);
 }
 
+/**
+ * @brief Check if numbers mantissas are equal
+ * @param d First number
+ * @param d2 Second number
+ * @param use_all_bits Flag
+ * @return num Result of checking
+ */
 int mantissa_is_equal(s21_decimal d1, s21_decimal d2, bool use_all_bits) {
   return d1.bits[0] == d2.bits[0] && d1.bits[1] == d2.bits[1] &&
          d1.bits[2] == d2.bits[2] &&
          (use_all_bits ? d1.bits[3] == d2.bits[3] : true);
 }
 
+/**
+ * @brief Check if numbers mantissas are less
+ * @param d First number
+ * @param d2 Second number
+ * @param use_all_bits Flag
+ * @return num Result of checking
+ */
 int mantissa_is_less(s21_decimal d1, s21_decimal d2, bool use_all_bits) {
   int res = 0;
   if (use_all_bits && d1.bits[3] != d2.bits[3]) {
@@ -70,9 +131,12 @@ int mantissa_is_less(s21_decimal d1, s21_decimal d2, bool use_all_bits) {
   return res;
 }
 
+/**
+ * @brief Increases number exp by 1 and mantissa by 10
+ * @param d Number
+ * @return res New exp value
+ */
 int increase_exp(s21_decimal *d) {
-  // multiply bits[0-2] by 10, and increase exp
-  // return the new exp or -1 in case of an error
   int res = -1;
 
   int exp = get_decimal_exp(*d);
@@ -86,10 +150,15 @@ int increase_exp(s21_decimal *d) {
   return res;
 }
 
+/**
+ * @brief Decrease number exp by n and mantissa by 10^n
+ * @param d Number
+ * @param n Scale value
+ * @param has_reminder Flag
+ * @param with_round Flag
+ * @return res New exp value
+ */
 int decrease_exp(s21_decimal *d, int n, bool has_reminder, bool with_round) {
-  // divide bits[0-2] by 10, and decrease exp
-  // return the new exp
-
   int exp = get_decimal_exp(*d);
   if (exp == 0 || n <= 0) return exp;
 
@@ -109,6 +178,14 @@ int decrease_exp(s21_decimal *d, int n, bool has_reminder, bool with_round) {
   return exp;
 }
 
+/**
+ * @brief Decrease number exp by n and mantissa by 10^n in s21_big_decimal
+ * @param d Number
+ * @param n Scale value
+ * @param has_reminder Flag
+ * @param with_round Flag
+ * @return res New exp value
+ */
 int decrease_exp_big(s21_big_decimal *d, int n, int reminder, bool with_round) {
   int exp = get_decimal_exp_big(*d);
   if (exp == 0 || n <= 0) return exp;
@@ -130,6 +207,11 @@ int decrease_exp_big(s21_big_decimal *d, int n, int reminder, bool with_round) {
   return exp;
 }
 
+/**
+ * @brief Normalizes two numbers to have same exp
+ * @param d1 First number
+ * @param d2 Secnd number
+ */
 void decimal_normalization(s21_decimal *d1, s21_decimal *d2) {
   int exp1 = get_decimal_exp(*d1);
   int exp2 = get_decimal_exp(*d2);
@@ -141,7 +223,9 @@ void decimal_normalization(s21_decimal *d1, s21_decimal *d2) {
   int max_exp = (exp1 > exp2) ? exp1 : exp2;
   if (max_exp > S21_MAX_EXP) max_exp = S21_MAX_EXP;
 
-  // increase to the max
+  /*
+   *      Increase to the max
+   */
   if (max_exp > exp1) {
     while ((tmp_exp = increase_exp(d1)) && tmp_exp != -1 && max_exp > exp1++)
       ;
@@ -150,8 +234,9 @@ void decimal_normalization(s21_decimal *d1, s21_decimal *d2) {
     while ((tmp_exp = increase_exp(d2)) && tmp_exp != -1 && max_exp > exp2++)
       ;
   }
-
-  // if increase didn't help, then descrease
+  /*
+   *      if increase didn't help, then descrease
+   */
   int min_exp = (exp1 > exp2) ? exp2 : exp1;
   if (min_exp > S21_MAX_EXP) min_exp = S21_MAX_EXP;
 
@@ -159,6 +244,13 @@ void decimal_normalization(s21_decimal *d1, s21_decimal *d2) {
   decrease_exp(d2, exp2 - min_exp, false, true);
 }
 
+/**
+ * @brief Compares two numbers
+ * @param value_1 First number
+ * @param value_2 Secnd number
+ * @param mode Comparation mode
+ * @return res Bool result of comparation
+ */
 int decimal_comparison(s21_decimal value_1, s21_decimal value_2, int mode) {
   int res = false;
 
@@ -198,6 +290,13 @@ int decimal_comparison(s21_decimal value_1, s21_decimal value_2, int mode) {
   return res;
 }
 
+/**
+ * @brief Sum two numbers with same sign
+ * @param value_1 First number
+ * @param value_2 Secnd number
+ * @param result Sum
+ * @return num Error code
+ */
 int sum_same_sign(s21_decimal value_1, s21_decimal value_2,
                   s21_decimal *result) {
   set_same_exp(value_1, result);
@@ -229,6 +328,13 @@ int sum_same_sign(s21_decimal value_1, s21_decimal value_2,
   return S21_OK;
 }
 
+/**
+ * @brief Sum two numbers with same sign in s21_big_decimal
+ * @param value_1 First number
+ * @param value_2 Secnd number
+ * @param result Sum
+ * @return num Error code
+ */
 int sum_same_sign_big(s21_big_decimal value_1, s21_big_decimal value_2,
                       s21_big_decimal *result) {
   int carry = 0;
@@ -275,12 +381,22 @@ int sub_pos(s21_decimal greater, s21_decimal lower, s21_decimal *result) {
   return S21_OK;
 }
 
+/**
+ * @brief Decimal fabs function
+ * @param value_1 Number
+ * @return value New number
+ */
 s21_decimal s21_decimal_fabs(s21_decimal value) {
   if (check_bit(value.bits[3], 31) == 1)
     value.bits[3] = set_bit(value.bits[3], 31);
   return value;
 }
 
+/**
+ * @brief Copy exp from value to result
+ * @param value Number (from)
+ * @param result Number (to)
+ */
 void set_same_exp(s21_decimal value, s21_decimal *result) {
   int temp = check_bit(result->bits[3], 31);
   for (int i = 0; i < 32; i++) {
@@ -288,6 +404,14 @@ void set_same_exp(s21_decimal value, s21_decimal *result) {
   }
   if (temp == 1) result->bits[3] = set_bit(result->bits[3], 31);
 }
+
+/**
+ * @brief Substract of mantissas
+ * @param value_1 First number
+ * @param value_1 Second number
+ * @param result Result number
+ * @return flag Error code
+ */
 int sub_mantis(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   result->bits[0] = 0;
   result->bits[1] = 0;
@@ -299,11 +423,12 @@ int sub_mantis(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
 
   if ((check_bit(value_1.bits[3], 31) == 0 &&
        check_bit(value_2.bits[3], 31) == 0)) {
-    if (s21_is_greater_or_equal(first_val,
-                                second_val)) {  // |v1|>|v2| (+v1) - (+v2)
+    /*
+     *      |v1|>|v2| (+v1) - (+v2)
+     */
+    if (s21_is_greater_or_equal(first_val, second_val)) {
       sub_pos(first_val, second_val, result);
-    } else {  // |v2|>|v1| (+v1) - (+v2)
-
+    } else {
       sub_pos(second_val, first_val, result);
       result->bits[3] = set_bit(result->bits[3], 31);
     }
@@ -311,23 +436,28 @@ int sub_mantis(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
 
   if ((check_bit(value_1.bits[3], 31) == 1 &&
        check_bit(value_2.bits[3], 31) == 1)) {
-    if (s21_is_greater_or_equal(first_val,
-                                second_val)) {  // |v1|>|v2| (-v1) - (-v2)
+    /*
+     *      |v1|>|v2| (-v1) - (-v2)
+     */
+    if (s21_is_greater_or_equal(first_val, second_val)) {
       sub_pos(first_val, second_val, result);
       result->bits[3] = set_bit(result->bits[3], 31);
-    } else {  // |v2|>|v1| (-v1) - (-v2)
-
+    } else {
       sub_pos(second_val, first_val, result);
     }
   }
-
+  /*
+   *      (+v1) - (-v2)
+   */
   if ((check_bit(value_1.bits[3], 31) == 0 &&
-       check_bit(value_2.bits[3], 31) == 1)) {  // (+v1) - (-v2)
+       check_bit(value_2.bits[3], 31) == 1)) {
     flag = s21_add(first_val, second_val, result);
   }
-
+  /*
+   *      (-v1) - (+v2)
+   */
   if ((check_bit(value_1.bits[3], 31) == 1 &&
-       check_bit(value_2.bits[3], 31) == 0)) {  // (-v1) - (+v2)
+       check_bit(value_2.bits[3], 31) == 0)) {
     flag = s21_add(first_val, second_val, result);
     if (flag == S21_HUGE_ERR) flag = S21_SMALL_ERR;
     result->bits[3] = set_bit(result->bits[3], 31);
@@ -335,6 +465,13 @@ int sub_mantis(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   return flag;
 }
 
+/**
+ * @brief Addition of mantissas
+ * @param value_1 First number
+ * @param value_1 Second number
+ * @param result Result number
+ * @return flag Error code
+ */
 int add_mantis(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   result->bits[0] = 0;
   result->bits[1] = 0;
@@ -368,6 +505,11 @@ int add_mantis(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   return flag;
 }
 
+/**
+ * @brief Divide value of mantissa by 10
+ * @param d Number
+ * @return remainder Remainder value
+ */
 int divide_mantissa_by_10(s21_decimal *d) {
   // Divide the 96-bit integer by 10.
   unsigned long long remainder = 0;
@@ -381,6 +523,11 @@ int divide_mantissa_by_10(s21_decimal *d) {
   return (int)remainder;
 }
 
+/**
+ * @brief Divide value of mantissa by 10 in s21_bif_decimal
+ * @param d Number
+ * @return remainder Remainder value
+ */
 int divide_mantissa_by_10_big(s21_big_decimal *d) {
   unsigned long long remainder = 0;
 
@@ -395,10 +542,13 @@ int divide_mantissa_by_10_big(s21_big_decimal *d) {
   return (int)remainder;
 }
 
+/**
+ * @brief Multiply value of mantissa by 10
+ * @param d Number
+ * @param use_all_bits Flag
+ * @return res Was operation succeed
+ */
 bool multiply_mantissa_by_10(s21_decimal *d, bool use_all_bits) {
-  // returns true and modifies the decimal if the multiplication is within
-  // bounds returns false and don't touch the decimal otherwise
-
   bool res = false;
   s21_decimal tmp_d = *d;
   unsigned long long carry = 0;
@@ -409,14 +559,19 @@ bool multiply_mantissa_by_10(s21_decimal *d, bool use_all_bits) {
     unsigned long long x_by_2 = (unsigned long long)x << 1;
     unsigned long long sum = x_by_8 + x_by_2 + carry;
 
-    // Move the lower 32 bits to the current element.
+    /*
+     *      Move the lower 32 bits to the current element.
+     */
     tmp_d.bits[i] = (unsigned int)(sum & 0xFFFFFFFF);
 
-    // Calculate the carry for the next iteration.
+    /*
+     *      Calculate the carry for the next iteration.
+     */
     carry = sum >> 32;
   }
-
-  // Check if there's a carry left after processing all elements.
+  /*
+   *      Check if there's a carry left after processing all elements.
+   */
   if (carry == 0) {
     *d = tmp_d;
     res = true;
@@ -425,6 +580,13 @@ bool multiply_mantissa_by_10(s21_decimal *d, bool use_all_bits) {
   return res;
 }
 
+/**
+ * @brief Substract bits of mantissa
+ * @param minuend Minuend
+ * @param subtrahend Subtrahend
+ * @param use_all_bits Flag
+ * @return res Was operation succeed
+ */
 bool subtract_bits(s21_decimal *minuend, s21_decimal subtrahend,
                    bool use_all_bits) {
   if (mantissa_is_less(*minuend, subtrahend, use_all_bits)) {
@@ -447,6 +609,12 @@ bool subtract_bits(s21_decimal *minuend, s21_decimal subtrahend,
   return res;
 }
 
+/**
+ * @brief Addict bits of mantissa
+ * @param accumulator Accumulator
+ * @param addend Addend
+ * @return res Was operation succeed
+ */
 bool add_bits(s21_decimal *accumulator, s21_decimal addend) {
   unsigned long long carry = 0;
   bool res = true;
@@ -467,6 +635,12 @@ bool add_bits(s21_decimal *accumulator, s21_decimal addend) {
   return res;
 }
 
+/**
+ * @brief Addict bits of mantissa in s21_big_decimal
+ * @param accumulator Accumulator
+ * @param addend Addend
+ * @return res Was operation succeed
+ */
 bool add_bits_big(s21_big_decimal *accumulator, s21_big_decimal addend) {
   unsigned long long carry = 0;
   bool res = true;
@@ -487,6 +661,12 @@ bool add_bits_big(s21_big_decimal *accumulator, s21_big_decimal addend) {
   return res;
 }
 
+/**
+ * @brief Left shift of all mantissa bits
+ * @param d Number
+ * @param use_all_bits Flag
+ * @return res Was operation succeed
+ */
 bool left_shift_bits(s21_decimal *d, bool use_all_bits) {
   bool res = true;
   unsigned long long carry = 0;
@@ -508,6 +688,11 @@ bool left_shift_bits(s21_decimal *d, bool use_all_bits) {
   return res;
 }
 
+/**
+ * @brief Left shift of all mantissa bits in s21_big_decimal
+ * @param d Number
+ * @return res Was operation succeed
+ */
 bool left_shift_bits_big(s21_big_decimal *d) {
   bool res = true;
   unsigned long long carry = 0;
@@ -528,6 +713,12 @@ bool left_shift_bits_big(s21_big_decimal *d) {
   return res;
 }
 
+/**
+ * @brief Right shift of all mantissa bits
+ * @param d Number
+ * @param use_all_bits Flag
+ * @return res Was operation succeed
+ */
 void right_shift_bits(s21_decimal *d, bool use_all_bits) {
   unsigned long long carry = 0;
   int i_max = use_all_bits ? 3 : 2;
@@ -539,30 +730,57 @@ void right_shift_bits(s21_decimal *d, bool use_all_bits) {
   }
 }
 
+/**
+ * @brief Switch bit of s21_decimal
+ * @param d Number
+ * @param bit_position Index
+ */
 void set_bit96(s21_decimal *d, int bit_position) {
   int index = bit_position / 32;
   int bit_offset = bit_position % 32;
   d->bits[index] |= (1 << bit_offset);
 }
 
+/**
+ * @brief Switch bit of s21_big_decimal
+ * @param d Number
+ * @param bit_position Index
+ */
 void set_bit192(s21_big_decimal *d, int bit_position) {
   int index = bit_position / 32;
   int bit_offset = bit_position % 32;
   d->bits[index] |= (1 << bit_offset);
 }
 
+/**
+ * @brief Sets to 0 bit of s21_big_decimal
+ * @param d Number
+ * @param bit_position Index
+ */
 void set_zero_bit192(s21_big_decimal *d, int bit_position) {
   int index = bit_position / 32;
   int bit_offset = bit_position % 32;
   d->bits[index] &= ~(1 << bit_offset);
 }
 
+/**
+ * @brief Gets bit of s21_big_decimal
+ * @param d Number
+ * @param bit_position Index
+ */
 int get_bit192(s21_big_decimal d, int bit_position) {
   int index = bit_position / 32;
   int bit_offset = bit_position % 32;
   return check_bit(d.bits[index], bit_offset);
 }
 
+/**
+ * @brief Divide mantissas
+ * @param value_1 Dividend
+ * @param value_2 Divisor
+ * @param quotient Quotient
+ * @param remainder Remainder
+ */
 void div_mantissas(s21_decimal value_1, s21_decimal value_2,
                    s21_decimal *quotient, s21_decimal *remainder) {
   s21_decimal temp_divisor = value_2;
@@ -590,6 +808,11 @@ void div_mantissas(s21_decimal value_1, s21_decimal value_2,
   *remainder = temp_remainder;
 }
 
+/**
+ * @brief Round float number after 7 digits
+ * @param src Number
+ * @return new_src Rounded number
+ */
 double conv_round(float src) {
   char e[64];
   sprintf(e, "%E", src);
@@ -621,6 +844,11 @@ double conv_round(float src) {
   return new_src;
 }
 
+/**
+ * @brief Convert double to s21_decimal
+ * @param src Number (from)
+ * @param dst Number (to)
+ */
 void convert_to_decimal(double src, s21_decimal *dst) {
   dst->bits[3] = dst->bits[2] = dst->bits[1] = dst->bits[0] = 0;
 
@@ -649,7 +877,7 @@ void convert_to_decimal(double src, s21_decimal *dst) {
     mypow = pow(10., scale);
   }
 
-  dst->bits[3] = (scale << 16) | (sign << 31);
+  dst->bits[3] = (scale << 16) | ((unsigned)sign << 31);
   for (int i = 0; i < 96; ++i) {
     if (fmod(floor(scaled_value), 2) == 1)
       dst->bits[i / 32] = set_bit(dst->bits[i / 32], i % 32);
@@ -657,11 +885,13 @@ void convert_to_decimal(double src, s21_decimal *dst) {
   }
 }
 
+/**
+ * @brief Remove the trailing zeros from s21_decimal and decrease exp
+ * @param d Number
+ * @param from_exp Start sacle
+ * @param to_exp End scale
+ */
 int truncate_trailing_zeros(s21_decimal *d, int from_exp, int to_exp) {
-  // remove the trailing zeros from decimal
-  // and decrease exp
-
-  // int exp = get_decimal_exp(*d);
   int exp_new = from_exp;
   bool res = true;
   while (exp_new > to_exp && res) {
@@ -677,18 +907,34 @@ int truncate_trailing_zeros(s21_decimal *d, int from_exp, int to_exp) {
   return exp_new;
 }
 
+/**
+ * @brief Banking roundinig
+ * @param d Number
+ * @param quotient Quotient
+ * @param has_reminder Flag
+ */
 void bank_rounding(s21_decimal *d, int quotient, bool has_reminder) {
   if (quotient > 5 || (quotient == 5 && (d->bits[0] & 1 || has_reminder))) {
     add_bits(d, S21_D_ONE);
   }
 }
 
+/**
+ * @brief Banking roundinig for s21_big_decimal
+ * @param d Number
+ * @param quotient Quotient
+ * @param has_reminder Flag
+ */
 void bank_rounding_big(s21_big_decimal *d, int quotient, bool has_reminder) {
   if (quotient > 5 || (quotient == 5 && (d->bits[0] & 1 || has_reminder))) {
     add_bits_big(d, S21_D_ONE_BIG);
   }
 }
 
+/**
+ * @brief Convert s21_big_decimal to s21_decimal and round
+ * @param mul_res Number
+ */
 void from_big_to_decimal_with_rounding(s21_big_decimal *mul_res) {
   if (((mul_res->bits[3] != 0 || mul_res->bits[4] != 0 ||
         mul_res->bits[5] != 0) &&
@@ -733,13 +979,20 @@ void from_big_to_decimal_with_rounding(s21_big_decimal *mul_res) {
         }
       }
     }
-    decrease_exp_big(&*mul_res, n, 0, 1);
+    decrease_exp_big(mul_res, n, 0, 1);
   }
 }
 
+/**
+ * @brief Multiply two s21_bif_decimal numbers
+ * @param value_1_big Fist number
+ * @param value_2_big Second number
+ * @param flag Flag
+ * @return mul_res Result number
+ */
 s21_big_decimal bits_mult(s21_big_decimal *value_1_big,
                           s21_big_decimal *value_2_big, int *flag) {
-  s21_big_decimal mul_res_tmp = {{0, 0, 0, 0, 0, 0, 0}};
+  s21_big_decimal mul_res_tmp;
   s21_big_decimal mul_res = {{0, 0, 0, 0, 0, 0, 0}};
   int i = 0;
   while ((value_1_big->bits[0] != 0 || value_1_big->bits[1] != 0 ||
@@ -753,14 +1006,24 @@ s21_big_decimal bits_mult(s21_big_decimal *value_1_big,
         *flag = S21_HUGE_ERR;
         i = 192;
       }
-      set_zero_bit192(&(*value_1_big), i);
+      set_zero_bit192(value_1_big, i);
     }
-    left_shift_bits_big(&(*value_2_big));
+    left_shift_bits_big(value_2_big);
     i++;
   }
   return mul_res;
 }
 
+/**
+ * @brief Divide two numbers
+ * @param value_1 Fist number
+ * @param value_2 Second number
+ * @param result Rusult number
+ * @param result_sign Sign value
+ * @param exp1 Exp of value_1
+ * @param exp2 Exp of value_2
+ * @return res Error code
+ */
 int get_div_result(s21_decimal value_1, s21_decimal value_2,
                    s21_decimal *result, int result_sign, int exp1, int exp2) {
   int res = S21_OK;
@@ -769,10 +1032,12 @@ int get_div_result(s21_decimal value_1, s21_decimal value_2,
 
   s21_decimal quotient = S21_D_ZERO;
   s21_decimal remainder = value_1;
-  remainder.bits[3] = 0;  // we will use all 4 bits
+  remainder.bits[3] = 0;
   int tmp_quotient_int = 0;
 
-  // Perform the division operation on the 96-bit integer numbers
+  /*
+   *      Perform the division operation on the 96-bit integer numbers
+   */
   if (mantissa_is_equal(value_1, value_2, false)) {
     quotient = S21_D_ONE;
   } else {
@@ -794,7 +1059,9 @@ int get_div_result(s21_decimal value_1, s21_decimal value_2,
 
   bool has_reminder = !decimal_is_zero(remainder, true);
 
-  // Store the result and ajust the final value (exp, rounding, trailing zeros)
+  /*
+   *      Store the result and ajust the final value
+   */
   *result = quotient;
   if (exp < 0) {
     for (; exp && multiply_mantissa_by_10(result, false); exp++) {

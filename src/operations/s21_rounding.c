@@ -1,13 +1,17 @@
 #include "s21_common.h"
 
+/**
+ * @brief Floor rounding operation
+ * @param value Number
+ * @param result Rusult number
+ * @return num Error code
+ */
 int s21_floor(s21_decimal value, s21_decimal *result) {
   if (result == NULL) {
     return S21_OK;
   }
-  // MIN_DECIMAL_VALUE -79,228,162,514,264,337,593,543,950,335
-  // MAX_DECIMAL_VALUE 79,228,162,514,264,337,593,543,950,335
+
   s21_decimal s21_min_decimal_value = {{-1, -1, -1, 1u << S21_SIGN_SHIFT}};
-  // s21_decimal s21_max_decimal_value = {{-1, -1, -1, 0}};
   s21_decimal zero_decimal = {{0, 0, 0, 0}};
   s21_decimal one_decimal = {{1, 0, 0, 0}};
   int error_flag = 1;
@@ -36,6 +40,12 @@ int s21_floor(s21_decimal value, s21_decimal *result) {
   return error_flag;
 }
 
+/**
+ * @brief Pure rounding operation
+ * @param value Number
+ * @param result Rusult number
+ * @return num Error code
+ */
 int s21_round(s21_decimal value, s21_decimal *result) {
   if (result == NULL) {
     return S21_OK;
@@ -87,6 +97,12 @@ int s21_round(s21_decimal value, s21_decimal *result) {
   return error_flag;
 }
 
+/**
+ * @brief Truncate rounding operation
+ * @param value Number
+ * @param result Rusult number
+ * @return num Error code
+ */
 int s21_truncate(s21_decimal value, s21_decimal *result) {
   if (result == NULL) {
     return S21_OK;
@@ -98,6 +114,12 @@ int s21_truncate(s21_decimal value, s21_decimal *result) {
   return S21_OK;
 }
 
+/**
+ * @brief Negate a number
+ * @param value Number
+ * @param result Nagetive number
+ * @return num Error code
+ */
 int s21_negate(s21_decimal value, s21_decimal *result) {
   if (result == NULL) {
     return S21_OK;
@@ -109,5 +131,5 @@ int s21_negate(s21_decimal value, s21_decimal *result) {
   } else {
     result->bits[3] &= ~mask;
   }
-  return 0;
+  return S21_OK;
 }

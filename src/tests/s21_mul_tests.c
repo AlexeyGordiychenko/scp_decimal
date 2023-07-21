@@ -1,5 +1,13 @@
-
 #include "s21_decimal_tests.h"
+
+/* * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ *
+ *          MULTIPLICATION FUNCTION TESTS
+ *
+ *
+ * * * * * * * * * * * * * * * * * * * * * * * * */
+
 START_TEST(s21_mul_0) {
   //-148744042013915655 * -98.4545 = 14644520284459058855.1975
   s21_decimal d1 = {{0xab1fa07, 0x21071eb, 0x0, sign_and_exp_bits(1, 0)}};

@@ -1,25 +1,31 @@
+# Constants
 CC=gcc
 CFLAGS=-Wall -Wextra -Werror -std=c11 -g -O0
 LDFLAGS=-lcheck -pthread -lm
+
 ifeq ($(shell uname), Linux)
 	LDFLAGS += -lsubunit
 endif
 
+# Converage
 GCOVFLAGS=--coverage
 GCOV_DIR=gcov
 
+# Directories
 TEST_DIR=tests
 SRC_DIR=operations
 OBJ_DIR=obj
 OBJ_DIR_GCOV=obj/$(GCOV_DIR)
 OBJ_DIR_TEST=obj/$(TEST_DIR)
 
+# Files
 SRCS=$(wildcard $(SRC_DIR)/*.c)
 SRCS_TEST=$(wildcard $(TEST_DIR)/*.c)
 OBJS=$(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
 OBJS_TEST=$(patsubst $(TEST_DIR)/%.c,$(OBJ_DIR_TEST)/%.o,$(SRCS_TEST))
 OBJS_GCOV=$(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR_GCOV)/%.o,$(SRCS))
 
+# Builds
 LIB=s21_decimal.a
 TEST=test
 TEST_BUILD=test_build
