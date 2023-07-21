@@ -21,10 +21,6 @@ typedef struct {
 #define S21_EXP_SHIFT 16
 #define S21_MAX4BITS 0xffffffff
 
-typedef struct {
-  uint64_t bits[7];
-} s21_big_decimal;
-
 enum comparison_enum { S21_EQUAL = 1, S21_LESS, S21_LESS_OR_EQUAL };
 enum error_enum {
   S21_OK,
