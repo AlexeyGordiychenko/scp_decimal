@@ -1,5 +1,24 @@
 # s21_decimal (Group project, 4 members)
 
+## My part of the project
+My part was to make
+   + Makefile
+   + tests (generated with C#) for all the functions, except converting
+   + s21_div, s21_truncate functions
+   + comparison functions
+
+So for my code you can check files
++ [Makefile](src/Makefile)
++ [tests](src/tests)
++ [s21_div](src/operations/s21_arithmetic.c?plain=1#L102)
++ [s21_truncate](src/operations/s21_rounding.c?plain=1#L106)
++ [comparison functions](src/operations/s21_comparison.c)
+
+## Score:
+The final score is 97% (max is 100%)
+
+Verter functional tests failed for the function `s21_from_float_to_decimal`.
+
 ## Task
 Development of Decimal type (96-bit).
 
