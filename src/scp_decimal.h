@@ -1,5 +1,5 @@
-#ifndef S21_DECIMAL
-#define S21_DECIMAL
+#ifndef SCP_DECIMAL
+#define SCP_DECIMAL
 
 #include <stdint.h>
 #include <stdio.h>
@@ -7,7 +7,7 @@
 
 typedef struct {
   unsigned int bits[4];
-} s21_decimal;
+} scp_decimal;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * *
  *
@@ -15,8 +15,8 @@ typedef struct {
  *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "operations/s21_arithmetic.h"
-#include "operations/s21_comparison.h"
-#include "operations/s21_converting.h"
-#include "operations/s21_rounding.h"
+#include "operations/scp_arithmetic.h"
+#include "operations/scp_comparison.h"
+#include "operations/scp_converting.h"
+#include "operations/scp_rounding.h"
 #endif

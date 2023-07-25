@@ -1,4 +1,4 @@
-#include "s21_common.h"
+#include "scp_common.h"
 
 /**
  * @brief Addition of two decimal
@@ -7,9 +7,9 @@
  * @param result Sum
  * @return flag Error code
  */
-int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
+int scp_add(scp_decimal value_1, scp_decimal value_2, scp_decimal *result) {
   if (result == NULL) {
-    return S21_OK;
+    return SCP_OK;
   }
   decimal_normalization(&value_1, &value_2);
   int flag = add_mantis(value_1, value_2, result);
@@ -29,9 +29,9 @@ int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
  * @param result Difference
  * @return flag Error code
  */
-int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
+int scp_sub(scp_decimal value_1, scp_decimal value_2, scp_decimal *result) {
   if (result == NULL) {
-    return S21_OK;
+    return SCP_OK;
   }
   decimal_normalization(&value_1, &value_2);
   int flag = sub_mantis(value_1, value_2, result);
@@ -52,36 +52,36 @@ int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
  * @param result Product
  * @return flag Error code
  */
-int s21_mul(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
-  int flag = S21_OK;
+int scp_mul(scp_decimal value_1, scp_decimal value_2, scp_decimal *result) {
+  int flag = SCP_OK;
   if (result != NULL) {
-    s21_big_decimal value_1_big = {{0, 0, 0, 0, 0, 0, 0}};
-    s21_big_decimal value_2_big = {{0, 0, 0, 0, 0, 0, 0}};
+    scp_big_decimal value_1_big = {{0, 0, 0, 0, 0, 0, 0}};
+    scp_big_decimal value_2_big = {{0, 0, 0, 0, 0, 0, 0}};
     for (int i = 0; i < 3; i++) {
-      value_1_big.bits[i] = (uint64_t)value_1.bits[i] & S21_MAX4BITS;
-      value_2_big.bits[i] = (uint64_t)value_2.bits[i] & S21_MAX4BITS;
+      value_1_big.bits[i] = (uint64_t)value_1.bits[i] & SCP_MAX4BITS;
+      value_2_big.bits[i] = (uint64_t)value_2.bits[i] & SCP_MAX4BITS;
     }
-    s21_big_decimal mul_res = bits_mult(&value_1_big, &value_2_big, &flag);
+    scp_big_decimal mul_res = bits_mult(&value_1_big, &value_2_big, &flag);
     int res_exp = get_decimal_exp(value_1) + get_decimal_exp(value_2);
     int res_sign =
         get_decimal_sign(value_1) != get_decimal_sign(value_2) ? 1 : 0;
     mul_res.bits[6] =
-        ((res_exp << 16) | ((unsigned)res_sign << 31)) & S21_MAX4BITS;
+        ((res_exp << 16) | ((unsigned)res_sign << 31)) & SCP_MAX4BITS;
     from_big_to_decimal_with_rounding(&mul_res);
     if (mul_res.bits[3] != 0 || mul_res.bits[4] != 0 || mul_res.bits[5] != 0) {
       if (!res_sign)
-        flag = S21_HUGE_ERR;
+        flag = SCP_HUGE_ERR;
       else
-        flag = S21_SMALL_ERR;
+        flag = SCP_SMALL_ERR;
     }
     if (mul_res.bits[0] == 0 && mul_res.bits[1] == 0 && mul_res.bits[2] == 0) {
       mul_res.bits[6] = (unsigned)res_sign << 31;
     }
-    if (flag == S21_OK) {
-      result->bits[0] = mul_res.bits[0] & S21_MAX4BITS;
-      result->bits[1] = mul_res.bits[1] & S21_MAX4BITS;
-      result->bits[2] = mul_res.bits[2] & S21_MAX4BITS;
-      result->bits[3] = mul_res.bits[6] & S21_MAX4BITS;
+    if (flag == SCP_OK) {
+      result->bits[0] = mul_res.bits[0] & SCP_MAX4BITS;
+      result->bits[1] = mul_res.bits[1] & SCP_MAX4BITS;
+      result->bits[2] = mul_res.bits[2] & SCP_MAX4BITS;
+      result->bits[3] = mul_res.bits[6] & SCP_MAX4BITS;
     } else {
       result->bits[0] = 0;
       result->bits[1] = 0;
@@ -99,9 +99,9 @@ int s21_mul(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
  * @param result Quotient
  * @return flag Error code
  */
-int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
+int scp_div(scp_decimal value_1, scp_decimal value_2, scp_decimal *result) {
   if (result == NULL) {
-    return S21_OK;
+    return SCP_OK;
   }
   /*
    *      Get sign and exp here just to maintain them both for the result even
@@ -116,15 +116,15 @@ int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
    *      Check for division by zero
    */
   if (decimal_is_zero(value_2, false)) {
-    *result = S21_D_ZERO;
-    return S21_DIV_ZERO_ERR;
+    *result = SCP_D_ZERO;
+    return SCP_DIV_ZERO_ERR;
   }
 
   if (decimal_is_zero(value_1, false)) {
     *result = value_1;
     set_decimal_sign(result, result_sign);
     set_decimal_exp(result, exp < 0 ? 0 : exp);
-    return S21_OK;
+    return SCP_OK;
   }
 
   int flag = get_div_result(value_1, value_2, result, result_sign, exp1, exp2);
@@ -132,8 +132,8 @@ int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   /*
    *      Zero the result if something is wrong
    */
-  if (flag != S21_OK || decimal_is_zero(*result, false)) {
-    *result = S21_D_ZERO;
+  if (flag != SCP_OK || decimal_is_zero(*result, false)) {
+    *result = SCP_D_ZERO;
   }
 
   return flag;

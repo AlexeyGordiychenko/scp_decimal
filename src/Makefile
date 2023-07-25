@@ -1,7 +1,7 @@
 # Constants
 CC=gcc
 CFLAGS=-Wall -Wextra -Werror -std=c11 -g -O0
-LDFLAGS=-lcheck -pthread -lm
+LDFLAGS=-lcheck -pthread -lm -lrt
 
 ifeq ($(shell uname), Linux)
 	LDFLAGS += -lsubunit
@@ -26,7 +26,7 @@ OBJS_TEST=$(patsubst $(TEST_DIR)/%.c,$(OBJ_DIR_TEST)/%.o,$(SRCS_TEST))
 OBJS_GCOV=$(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR_GCOV)/%.o,$(SRCS))
 
 # Builds
-LIB=s21_decimal.a
+LIB=scp_decimal.a
 TEST=test
 TEST_BUILD=test_build
 

@@ -1,10 +1,10 @@
-#ifndef S21_DECIMAL_TESTS_H
-#define S21_DECIMAL_TESTS_H
+#ifndef SCP_DECIMAL_TESTS_H
+#define SCP_DECIMAL_TESTS_H
 
 #include <check.h>
 
-#include "../operations/s21_common.h"
-#include "../s21_decimal.h"
+#include "../operations/scp_common.h"
+#include "../scp_decimal.h"
 
 #define PRE_TEST_HEADER "\033[33m**"
 #define POST_TEST_HEADER "**\033[0m"
@@ -35,4 +35,4 @@ Suite *negate_tests(void);
 Suite *mul_tests(void);
 Suite *common_tests(void);
 
-#endif  // S21_DECIMAL_TESTS_H
+#endif  // SCP_DECIMAL_TESTS_H

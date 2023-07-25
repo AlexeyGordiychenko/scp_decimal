@@ -1,7 +1,7 @@
-#include "s21_decimal_tests.h"
+#include "scp_decimal_tests.h"
 
 unsigned int sign_and_exp_bits(int sign, int exp) {
-  return ((unsigned)sign << S21_SIGN_SHIFT) | ((unsigned)exp << S21_EXP_SHIFT);
+  return ((unsigned)sign << SCP_SIGN_SHIFT) | ((unsigned)exp << SCP_EXP_SHIFT);
 }
 
 int main(void) {

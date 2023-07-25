@@ -1,15 +1,15 @@
-#include "s21_common.h"
+#include "scp_common.h"
 
 /**
- * @brief Convert int to s21_decial
+ * @brief Convert int to scp_decial
  * @param src Number (from)
  * @param dst Number (to)
  * @return num Error code
  */
-int s21_from_int_to_decimal(int src, s21_decimal *dst) {
-  int error_code = S21_OK;
+int scp_from_int_to_decimal(int src, scp_decimal *dst) {
+  int error_code = SCP_OK;
   if (dst == NULL) {
-    error_code = S21_ERROR;
+    error_code = SCP_ERROR;
   } else {
     int is_int_min = 0;
     int sign = 0;
@@ -38,20 +38,20 @@ int s21_from_int_to_decimal(int src, s21_decimal *dst) {
 }
 
 /**
- * @brief Convert float to s21_decial
+ * @brief Convert float to scp_decial
  * @param src Number (from)
  * @param dst Number (to)
  * @return num Error code
  */
-int s21_from_float_to_decimal(float src, s21_decimal *dst) {
-  int error_code = S21_OK;
+int scp_from_float_to_decimal(float src, scp_decimal *dst) {
+  int error_code = SCP_OK;
 
   if (isnan(src) || isinf(src) || dst == NULL) {
-    error_code = S21_ERROR;
+    error_code = SCP_ERROR;
   } else if (src > 0 && src < 1e-28) {
-    error_code = S21_ERROR;
+    error_code = SCP_ERROR;
   } else if (src > powf(2, 96) - 1 || src < -(powf(2, 96) - 1)) {
-    error_code = S21_ERROR;
+    error_code = SCP_ERROR;
   } else {
     if (src == 0) {
       dst->bits[3] = dst->bits[2] = dst->bits[1] = dst->bits[0] = 0;
@@ -64,16 +64,16 @@ int s21_from_float_to_decimal(float src, s21_decimal *dst) {
 }
 
 /**
- * @brief Convert s21_decimal to int
+ * @brief Convert scp_decimal to int
  * @param src Number (from)
  * @param dst Number (to)
  * @return num Error code
  */
-int s21_from_decimal_to_int(s21_decimal src, int *dst) {
-  int error_code = S21_OK;
+int scp_from_decimal_to_int(scp_decimal src, int *dst) {
+  int error_code = SCP_OK;
 
   if (dst == NULL) {
-    error_code = S21_ERROR;
+    error_code = SCP_ERROR;
   } else {
     int exp = get_decimal_exp(src);
 
@@ -94,7 +94,7 @@ int s21_from_decimal_to_int(s21_decimal src, int *dst) {
     }
 
     if (num > ((unsigned)__INT_MAX__ + get_decimal_sign(src))) {
-      error_code = S21_ERROR;
+      error_code = SCP_ERROR;
     } else {
       *dst = num;
       if (get_decimal_sign(src)) {
@@ -107,16 +107,16 @@ int s21_from_decimal_to_int(s21_decimal src, int *dst) {
 }
 
 /**
- * @brief Convert s21_decimal to float
+ * @brief Convert scp_decimal to float
  * @param src Number (from)
  * @param dst Number (to)
  * @return num Error code
  */
-int s21_from_decimal_to_float(s21_decimal src, float *dst) {
-  int error_code = S21_OK;
+int scp_from_decimal_to_float(scp_decimal src, float *dst) {
+  int error_code = SCP_OK;
 
   if (dst == NULL) {
-    error_code = S21_ERROR;
+    error_code = SCP_ERROR;
   } else {
     int exp = get_decimal_exp(src);
 
